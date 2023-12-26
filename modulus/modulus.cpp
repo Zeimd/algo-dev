@@ -29,9 +29,9 @@ int main()
 
 	div3 = IsDiv3(input);
 
-	PopCountTest();
+	//PopCountTest();
 
-	//Div3Test();
+	Div3Test();
 
 	return 0;
 }
@@ -71,7 +71,11 @@ bool PopCountTest()
 
 bool Div3Test()
 {
+	bool result = true;
+
 	constexpr uint32_t iters = std::numeric_limits<uint32_t>::max();
+
+	printf("Div3Test: start\n");
 
 	printf("iters = %u\n", iters);
 
@@ -102,11 +106,14 @@ bool Div3Test()
 				reduction = Div3Reduction(reduction);
 				printf("Info: reduction %i = %u\n", j,reduction);
 			}
-			return false;
+			result = false;
+			break;
 		}
 	}
 
-	return true;
+	printf("Div3Test: end\n");
+
+	return result;
 }
 
 uint32_t Div3Reduction(uint32_t x)
@@ -114,7 +121,7 @@ uint32_t Div3Reduction(uint32_t x)
 	constexpr uint32_t EVEN_BIT_MASK = 0b01010101010101010101010101010101;
 	constexpr uint32_t ODD_BIT_MASK = EVEN_BIT_MASK ^ -1;
 
-	x = PopCount(x & EVEN_BIT_MASK) + 2 * PopCount(x & ODD_BIT_MASK);
+	x = PopCountSWAR(x & EVEN_BIT_MASK) + 2 * PopCountSWAR(x & ODD_BIT_MASK);
 
 	return x;
 }
