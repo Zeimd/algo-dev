@@ -6,7 +6,10 @@
 
 uint32_t Div3Reduction(uint32_t x);
 bool IsDiv3(uint32_t x);
+uint32_t Mod3(uint32_t x);
 bool Div3Test();
+
+bool PopCountTest();
 
 int main()
 {
@@ -26,9 +29,44 @@ int main()
 
 	div3 = IsDiv3(input);
 
-	Div3Test();
+	PopCountTest();
+
+	//Div3Test();
 
 	return 0;
+}
+
+bool PopCountTest()
+{
+	bool result = true;
+
+	printf("PopCountTest: start\n");
+
+	constexpr uint32_t iters = std::numeric_limits<uint32_t>::max();
+
+	printf("iters = %u\n", iters);
+
+	for (uint32_t k = 0; k < iters; k++)
+	{
+		if (k % 10'000 == 0)
+		{
+			printf("iteration %u\n", k);
+		}
+
+		uint32_t correct = PopCount(k);
+
+		uint32_t swar = PopCountSWAR(k);
+
+		if (correct != swar)
+		{
+			printf("Error: input = %u, correct = %u, swar = %u\n", k, correct, swar);
+			result = false;
+		}
+	}
+
+	printf("PopCountTest: end\n");
+
+	return result;
 }
 
 bool Div3Test()
@@ -39,7 +77,7 @@ bool Div3Test()
 
 	for (uint32_t k = 0; k < iters; k++)
 	{
-		if (iters % 10'000 == 0)
+		if ( k % 10'000 == 0)
 		{
 			printf("iteration %u\n", k);
 		}
@@ -47,12 +85,23 @@ bool Div3Test()
 		uint32_t rem = k % 3;
 		bool correct = (rem == 0);
 
-		bool alg = IsDiv3(k);
+		uint32_t alg_rem = Mod3(k);
 
-		if (correct != alg)
+		bool isdiv = IsDiv3(alg_rem);
+
+		if ( (rem != alg_rem) || (correct != isdiv) )
 		{
-			printf("Error: input = %u, correct = %i, alg = %i\n", k, correct, alg);
-			printf("Info: reduction = %u\n", Div3Reduction(k));
+			printf("Error: input = %u\n", k);
+			printf("correct rem = %u, alg rem = %u\n", rem, alg_rem);
+			printf("correct isdiv = %i, alg isdiv = %i\n", correct, isdiv);
+
+			uint32_t reduction = k;
+
+			for (int j = 0; j < 4; j++)
+			{
+				reduction = Div3Reduction(reduction);
+				printf("Info: reduction %i = %u\n", j,reduction);
+			}
 			return false;
 		}
 	}
@@ -67,17 +116,41 @@ uint32_t Div3Reduction(uint32_t x)
 
 	x = PopCount(x & EVEN_BIT_MASK) + 2 * PopCount(x & ODD_BIT_MASK);
 
-	// After first round x fits within 6 bits
-
-	x = PopCount(x & EVEN_BIT_MASK) + 2 * PopCount(x & ODD_BIT_MASK);
-
 	return x;
 }
 
+uint32_t Mod3(uint32_t x)
+{
+	uint32_t reduction = Div3Reduction(x);
+
+	// First iteration produces a result in [0,48] range (6 bits)
+
+	reduction = Div3Reduction(reduction);
+
+	// Second iteration produces a result in [0,9] range (4 bits)
+
+	reduction = Div3Reduction(reduction);
+
+	// Third iteration produces a result in [0,6] range (3 bits)
+
+	reduction = Div3Reduction(reduction);
+
+	// Fourth iteration produces a result in [0,3] range (2 bits)
+
+	if (reduction == 3)
+	{
+		return 0;
+	}
+	return reduction;
+}
 
 bool IsDiv3(uint32_t x)
 {
-	uint32_t reduced = Div3Reduction(x);
+	uint32_t reduction = Div3Reduction(x);
 
-	return (reduced == 6) || (reduced == 3) || (reduced == 0);
+	// First iteration produces a result in [0,48] range (6 bits)
+
+	reduction = Div3Reduction(reduction);
+
+	return (reduction == 6) || (reduction == 3) || (reduction == 0);
 }
