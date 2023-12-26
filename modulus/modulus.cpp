@@ -94,7 +94,7 @@ bool Div3Test()
 
 		uint32_t alg_rem = Mod3(k);
 
-		bool isdiv = IsDiv3(alg_rem);
+		bool isdiv = IsDiv3(k);
 
 		if ( (rem != alg_rem) || (correct != isdiv) )
 		{
