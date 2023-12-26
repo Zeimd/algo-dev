@@ -9,7 +9,9 @@ bool IsDiv3(uint32_t x);
 uint32_t Mod3(uint32_t x);
 bool Div3Test();
 
-bool PopCountTest();
+typedef uint32_t(*TestFunction)(uint32_t);
+
+bool PopCountTest(TestFunction func);
 
 int main()
 {
@@ -29,14 +31,15 @@ int main()
 
 	div3 = IsDiv3(input);
 
-	//PopCountTest();
+	//PopCountTest(PopCountSWAR);
+	PopCountTest(PopCountSWARv2);
 
-	Div3Test();
+	//Div3Test();
 
 	return 0;
 }
 
-bool PopCountTest()
+bool PopCountTest(TestFunction func)
 {
 	bool result = true;
 
@@ -55,11 +58,11 @@ bool PopCountTest()
 
 		uint32_t correct = PopCount(k);
 
-		uint32_t swar = PopCountSWAR(k);
+		uint32_t test = (*func)(k);
 
-		if (correct != swar)
+		if (correct != test)
 		{
-			printf("Error: input = %u, correct = %u, swar = %u\n", k, correct, swar);
+			printf("Error: input = %u, correct = %u, swar = %u\n", k, correct, test);
 			result = false;
 		}
 	}
