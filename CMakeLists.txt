@@ -7,3 +7,4 @@ project ("algo-dev")
 
 # Include sub-projects.
 add_subdirectory ("division")
+add_subdirectory ("modulus")
