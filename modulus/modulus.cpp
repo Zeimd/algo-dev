@@ -129,6 +129,7 @@ uint32_t Div3Reduction(uint32_t x)
 	return x;
 }
 
+// Calculate remainder when input is divided by 3. See readme.txt for details.
 uint32_t Mod3(uint32_t x)
 {
 	uint32_t reduction = Div3Reduction(x);
@@ -154,6 +155,7 @@ uint32_t Mod3(uint32_t x)
 	return reduction;
 }
 
+// Check if input is divisible by 3. See readme.txt for details.
 bool IsDiv3(uint32_t x)
 {
 	uint32_t reduction = Div3Reduction(x);
@@ -161,6 +163,8 @@ bool IsDiv3(uint32_t x)
 	// First iteration produces a result in [0,48] range (6 bits)
 
 	reduction = Div3Reduction(reduction);
+
+	// Second iteration produces a result in [0,9] range (4 bits)
 
 	return (reduction == 6) || (reduction == 3) || (reduction == 0);
 }
