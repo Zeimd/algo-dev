@@ -15,17 +15,11 @@ int CheckResult(int* test_result, int* correct_result, int test_size);
 void FindAll(int* test_input, int test_size, SearchHandle handle, int* out_result);
 int TestSkeleton(const char* name, int* test_input, int test_size, int* correct_result, double refDuration, SearchHandle handle);
 
-int main()
+void GenerateInput(int test_size, int* out_data)
 {
-	const int num_groups = 4;
-
-	const int test_size = 4 * num_groups;
-
-	int* test_input = (int*)Ceng::AlignedMalloc(test_size * sizeof(int), 64);
-
 	for (int k = 0; k < test_size; k++)
 	{
-		test_input[k] = -1;
+		out_data[k] = -1;
 	}
 
 	for (int k = 0; k < test_size; k++)
@@ -34,15 +28,89 @@ int main()
 		{
 			int index = abs(rand()) % test_size;
 
-			if (test_input[index] == -1)
+			if (out_data[index] == -1)
 			{
-				test_input[index] = k;
+				out_data[index] = k;
 				break;
 			}
 		}
 		while (1);
 	}
+}
 
+void GenerateInput_v2(int test_size, int* out_data)
+{
+	out_data[0] = abs(rand()) % test_size;
+
+	for (int k = 1; k < test_size; k++)
+	{
+		do
+		{
+			int value = abs(rand()) % test_size;
+
+			int found = find_reference(out_data, k, value);
+
+			if (found == -1)
+			{
+				out_data[k] = value;
+				break;
+			}
+
+		} while (1);
+	}
+}
+
+void GenerateInput_v3(int test_size, int* out_data)
+{
+	for (int k = 0; k < test_size; k++)
+	{
+		out_data[k] = k;
+	}
+
+	for (int k = 0; k < test_size; k++)
+	{
+		do
+		{
+			int first = abs(rand()) % test_size;
+			int second = abs(rand()) % test_size;
+
+			if (first == second)
+			{
+				continue;
+			}
+
+			std::swap(out_data[first], out_data[second]);
+			break;
+
+		} while (1);
+	}
+}
+
+int main()
+{
+	double start, end, duration;
+
+	const int num_groups = 10000; // 4;
+
+	const int test_size = 4 * num_groups;
+
+	int* test_input = (int*)Ceng::AlignedMalloc(test_size * sizeof(int), 64);
+
+	printf("Generating test input\n");
+
+	start = Ceng_HighPrecisionTimer();
+
+	GenerateInput_v3(test_size, test_input);
+
+	end = Ceng_HighPrecisionTimer();
+
+	printf("Done\n");
+
+	duration = end - start;
+
+	printf("Took = %lf\n", duration);
+
+	/*
 	printf("test input:\n");
 
 	for (int k = 0; k < test_size; k++)
@@ -50,14 +118,15 @@ int main()
 		printf("%i ", test_input[k]);
 	}
 	printf("\n");
+	*/	
 
 	int* correct_result = (int*)std::malloc(test_size * sizeof(int));
 
-	double start = Ceng_HighPrecisionTimer();
+	start = Ceng_HighPrecisionTimer();
 
 	FindAll(test_input, test_size, find_reference, correct_result);
 
-	double end = Ceng_HighPrecisionTimer();
+	end = Ceng_HighPrecisionTimer();
 
 	double refDuration = end - start;
 
@@ -95,8 +164,13 @@ int CheckResult(int* test_result, int* correct_result, int test_size)
 		}
 		else
 		{
-			printf("   OK: %i : test_result = %i, correct = %i\n", k, test_result[k], correct_result[k]);
+			//printf("   OK: %i : test_result = %i, correct = %i\n", k, test_result[k], correct_result[k]);
 		}
+	}
+
+	if (result > 0)
+	{
+		printf("Total %i errors\n", result);
 	}
 
 	return result;
