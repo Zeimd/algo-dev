@@ -404,7 +404,7 @@ uint32_t RestoringDivisionRadix4(const uint32_t a, const uint32_t b, uint32_t* r
 		// subtracting too much. In this case it's necessary
 		// to decrease multiplier by one to keep numerator
 		// positive
-		if (n < 0)
+		while (n < 0)
 		{
 #ifdef _DEBUG
 			printf("[DEBUG] adjustment needed\n");
@@ -587,7 +587,7 @@ uint32_t RestoringDivisionRadix16(const uint32_t a, const uint32_t b, uint32_t* 
 		// subtracting too much. In this case it's necessary
 		// to decrease multiplier by one to keep numerator
 		// positive
-		if (n < 0)
+		while (n < 0)
 		{
 #ifdef _DEBUG
 			printf("[DEBUG] adjustment needed\n");
