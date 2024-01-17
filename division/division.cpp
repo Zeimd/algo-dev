@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <ceng/lib/timerlib.h>
+
 uint32_t RestoringDivision(const uint32_t a, const uint32_t b, uint32_t* remainder);
 
 uint32_t RestoringDivisionRadix4(const uint32_t a, const uint32_t b, uint32_t* remainder);
@@ -53,6 +55,7 @@ void PrintBinary(const int64_t x)
 }
 
 int DivisionTest(const char* name, DivisionCall callback, uint32_t range);
+double SpeedTest(const char* name, DivisionCall callback, uint32_t range, double refDuration);
 
 int main()
 {
@@ -131,10 +134,37 @@ int main()
 	printf("\n");
 	*/
 
-	uint32_t range = 10000;
+	uint32_t range = 20000;
+
+	/*
+	double start, end, refDuration;
+
+	start = Ceng_HighPrecisionTimer();
+
+	for (int numerator = 0; numerator < range; numerator++)
+	{
+		for (int divisor = 1; divisor < range; divisor++)
+		{
+			uint32_t correctDiv, correctMod;
+
+			correctDiv = numerator / divisor;
+			correctMod = numerator % divisor;
+		}
+	}
+
+	end = Ceng_HighPrecisionTimer();
+
+	refDuration = end - start;
+	
+	printf("refDuration = %lf , ratio = %lf\n", refDuration, refDuration / refDuration);
+	*/
 
 	//DivisionTest("RestoringDivisionRadix4", RestoringDivisionRadix4, range);
-	DivisionTest("RestoringDivisionRadix16", RestoringDivisionRadix16, range);
+	//DivisionTest("RestoringDivisionRadix16", RestoringDivisionRadix16, range);
+
+	double refDuration = SpeedTest("RestoringDivision", RestoringDivision, range, 1.0);
+	SpeedTest("RestoringDivisionRadix4", RestoringDivisionRadix4, range, refDuration);
+	SpeedTest("RestoringDivisionRadix16", RestoringDivisionRadix16, range, refDuration);
 
 	//DivisionTest("RestoringDivision", RestoringDivision, range);
 	
@@ -144,6 +174,8 @@ int main()
 
 int DivisionTest(const char* name, DivisionCall callback, uint32_t range)
 {
+	printf("DivisionTest\n");
+
 	printf("TEST: %s START\n", name);
 
 	int errorCount = 0;
@@ -179,6 +211,35 @@ int DivisionTest(const char* name, DivisionCall callback, uint32_t range)
 	}
 
 	return errorCount;
+}
+
+double SpeedTest(const char* name, DivisionCall callback, uint32_t range, double refDuration)
+{
+	printf("SpeedTest\n");
+
+	printf("TEST: %s START\n", name);
+
+	double start = Ceng_HighPrecisionTimer();
+
+	for (int numerator = 0; numerator < range; numerator++)
+	{
+		for (int divisor = 1; divisor < range; divisor++)
+		{
+			uint32_t testDiv, testMod;
+
+			testDiv = callback(numerator, divisor, &testMod);
+		}
+	}
+
+	double end = Ceng_HighPrecisionTimer();
+
+	printf("TEST: %s END\n", name);
+
+	double duration = end - start;
+
+	printf("Duration = %lf , ratio = %lf\n", duration, duration / refDuration);
+
+	return duration;
 }
 
 uint32_t RestoringDivision(const uint32_t a, const uint32_t b, uint32_t *remainder)
