@@ -5,13 +5,15 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <ceng/lib/timerlib.h>
+
 #include <ceng/datatypes/aligned-buffer.h>
 
 #include "vector_search.h"
 
 int CheckResult(int* test_result, int* correct_result, int test_size);
 void FindAll(int* test_input, int test_size, SearchHandle handle, int* out_result);
-int TestSkeleton(const char* name, int* test_input, int test_size, int* correct_result, SearchHandle handle);
+int TestSkeleton(const char* name, int* test_input, int test_size, int* correct_result, double refDuration, SearchHandle handle);
 
 int main()
 {
@@ -51,9 +53,17 @@ int main()
 
 	int* correct_result = (int*)std::malloc(test_size * sizeof(int));
 
+	double start = Ceng_HighPrecisionTimer();
+
 	FindAll(test_input, test_size, find_reference, correct_result);
 
-	int result = TestSkeleton("find_sse4", test_input, test_size, correct_result, find_sse4);
+	double end = Ceng_HighPrecisionTimer();
+
+	double refDuration = end - start;
+
+	printf("RefDuration = %lf , ratio = %lf\n", refDuration, refDuration / refDuration);
+
+	int result = TestSkeleton("find_sse", test_input, test_size, correct_result, refDuration, find_sse);
 
 	free(correct_result);
 
@@ -83,24 +93,35 @@ int CheckResult(int* test_result, int* correct_result, int test_size)
 			printf("ERROR: %i : test_result = %i, correct = %i\n", k, test_result[k], correct_result[k]);
 			result++;
 		}
+		else
+		{
+			printf("   OK: %i : test_result = %i, correct = %i\n", k, test_result[k], correct_result[k]);
+		}
 	}
 
 	return result;
 }
 
-int TestSkeleton(const char* name, int* test_input, int test_size, int* correct_result, SearchHandle handle)
+int TestSkeleton(const char* name, int* test_input, int test_size, int* correct_result, double refDuration, SearchHandle handle)
 {
 	printf("Test : %s : START\n", name);
 
 	int* search_result = (int*)std::malloc(test_size * sizeof(int));
 
+	double start = Ceng_HighPrecisionTimer();
+
 	FindAll(test_input, test_size, handle, search_result);
+
+	double end = Ceng_HighPrecisionTimer();
+
+	double duration = end - start;
 
 	int test_result = CheckResult(search_result, correct_result, test_size);
 
 	std::free(search_result);
 
 	printf("Test : %s : END\n", name);
+	printf("Duration = %lf , ratio = %lf\n", duration, duration / refDuration);
 
 	return test_result;
 }
