@@ -58,8 +58,8 @@ int main()
 {
 	InitRadix16Table();
 
-	//uint32_t a = 333;
-	//uint32_t b = 29;
+	uint32_t a = 32;
+	uint32_t b = 11;
 
 	//uint32_t a = 123456;
 	//uint32_t b = 113;
@@ -67,7 +67,6 @@ int main()
 	//uint32_t a = 333;
 	//uint32_t b = 1;
 
-	/*
 	printf("a = %u\n", a);
 	PrintBinary(a);
 	printf("\n");
@@ -106,17 +105,17 @@ int main()
 	printf("\n");
 	*/
 
-	//printf("Restoring division radix 4:\n");
+	printf("Restoring division radix 4:\n");
 
-	//result = RestoringDivisionRadix4(a, b, &remainder);
+	result = RestoringDivisionRadix4(a, b, &remainder);
 
-	//printf("result = %u\n", result);
-	//PrintBinary(result);
-	//printf("\n");
+	printf("result = %u\n", result);
+	PrintBinary(result);
+	printf("\n");
 
-	//printf("remainder = %u\n", remainder);
-	//PrintBinary(remainder);
-	//printf("\n");
+	printf("remainder = %u\n", remainder);
+	PrintBinary(remainder);
+	printf("\n");
 
 	/*
 	printf("Restoring division radix 16:\n");
@@ -132,11 +131,13 @@ int main()
 	printf("\n");
 	*/
 
-	uint32_t range = 100;
+	uint32_t range = 10000;
+
+	//DivisionTest("RestoringDivisionRadix4", RestoringDivisionRadix4, range);
+	DivisionTest("RestoringDivisionRadix16", RestoringDivisionRadix16, range);
 
 	//DivisionTest("RestoringDivision", RestoringDivision, range);
-	DivisionTest("RestoringDivisionRadix4", RestoringDivisionRadix4, range);
-	//DivisionTest("RestoringDivisionRadix16", RestoringDivisionRadix16, range);
+	
 
 	return 0;
 }
