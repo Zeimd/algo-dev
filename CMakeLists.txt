@@ -8,3 +8,5 @@ project ("algo-dev")
 # Include sub-projects.
 add_subdirectory ("division")
 add_subdirectory ("modulus")
+add_subdirectory ("vector_sort")
+add_subdirectory ("color_conversion")
