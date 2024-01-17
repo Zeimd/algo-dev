@@ -50,7 +50,9 @@ int find_sse(int* in_array, int in_length, int x)
 
 	finalize:
 
-		// x can appear only once in input, so EAX has exactly one bit set
+		// *x* can appear only once in input, so EAX has exactly one bit set.
+		// The position of this bit is the index we need. Conversion to float
+		// makes this information easy to extract.
 
 		movd xmm1, eax;
 		cvtdq2ps xmm1, xmm1;
