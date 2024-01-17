@@ -460,14 +460,14 @@ uint32_t RestoringDivisionRadix4(const uint32_t a, const uint32_t b, uint32_t* r
 // 15*(8+d)
 //
 // This means that we can crop the outer table to 225 entries.
+// TODO: why are all 256 table entries still needed?
 static int32_t lookupTableRadix16[8][256];
 
 void InitRadix16Table()
 {
 	for (int d = 0; d < 8; d++)
 	{
-		//for (int n = 0; n < 256; n++)
-		for (int n = 0; n < 226; n++)
+		for (int n = 0; n < 256; n++)
 		{
 			lookupTableRadix16[d][n] = n / (8 + d);
 		}
