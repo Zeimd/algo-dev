@@ -19,7 +19,7 @@ int main()
 
 	const int test_size = 4 * num_groups;
 
-	int* test_input = (int*)Ceng::AlignedMalloc(test_size * sizeof(float), 64);
+	int* test_input = (int*)Ceng::AlignedMalloc(test_size * sizeof(int), 64);
 
 	for (int k = 0; k < test_size; k++)
 	{
@@ -49,7 +49,7 @@ int main()
 	}
 	printf("\n");
 
-	int* correct_result = (int*)std::malloc(test_size);
+	int* correct_result = (int*)std::malloc(test_size * sizeof(int));
 
 	FindAll(test_input, test_size, find_reference, correct_result);
 
@@ -92,13 +92,13 @@ int TestSkeleton(const char* name, int* test_input, int test_size, int* correct_
 {
 	printf("Test : %s : START\n", name);
 
-	int* search_result = (int*)std::malloc(test_size);
+	int* search_result = (int*)std::malloc(test_size * sizeof(int));
 
 	FindAll(test_input, test_size, handle, search_result);
 
 	int test_result = CheckResult(search_result, correct_result, test_size);
 
-	free(search_result);
+	std::free(search_result);
 
 	printf("Test : %s : END\n", name);
 
