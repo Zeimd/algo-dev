@@ -61,7 +61,6 @@ int find_sse(int* in_array, int in_length, int x)
 
 		sub eax, 127;
 		add eax, ecx;
-		shr ecx, 2;
 		
 		mov result, eax;
 	end_loop:
