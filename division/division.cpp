@@ -11,6 +11,8 @@ uint32_t RestoringDivisionRadix4(const uint32_t a, const uint32_t b, uint32_t* r
 
 uint32_t RestoringDivisionRadix16(const uint32_t a, const uint32_t b, uint32_t* remainder);
 
+typedef uint32_t (*DivisionCall)(const uint32_t a, const uint32_t b, uint32_t* remainder);
+
 void InitRadix16Table();
 
 void PrintBinary(const uint8_t x)
@@ -50,6 +52,8 @@ void PrintBinary(const int64_t x)
 	PrintBinary((uint8_t*)&x, 8);
 }
 
+int DivisionTest(const char* name, DivisionCall callback, uint32_t range);
+
 int main()
 {
 	InitRadix16Table();
@@ -57,12 +61,13 @@ int main()
 	//uint32_t a = 333;
 	//uint32_t b = 29;
 
-	uint32_t a = 123456;
-	uint32_t b = 113;
+	//uint32_t a = 123456;
+	//uint32_t b = 113;
 
 	//uint32_t a = 333;
 	//uint32_t b = 1;
 
+	/*
 	printf("a = %u\n", a);
 	PrintBinary(a);
 	printf("\n");
@@ -113,6 +118,7 @@ int main()
 	//PrintBinary(remainder);
 	//printf("\n");
 
+	/*
 	printf("Restoring division radix 16:\n");
 
 	result = RestoringDivisionRadix16(a, b, &remainder);
@@ -124,10 +130,55 @@ int main()
 	printf("remainder = %u\n", remainder);
 	PrintBinary(remainder);
 	printf("\n");
+	*/
+
+	uint32_t range = 100;
+
+	//DivisionTest("RestoringDivision", RestoringDivision, range);
+	DivisionTest("RestoringDivisionRadix4", RestoringDivisionRadix4, range);
+	//DivisionTest("RestoringDivisionRadix16", RestoringDivisionRadix16, range);
 
 	return 0;
 }
 
+int DivisionTest(const char* name, DivisionCall callback, uint32_t range)
+{
+	printf("TEST: %s START\n", name);
+
+	int errorCount = 0;
+
+	for (int numerator = 0; numerator < range; numerator++)
+	{
+		for (int divisor = 1; divisor < range; divisor++)
+		{
+			uint32_t correctDiv, correctMod;
+
+			correctDiv = numerator / divisor;
+			correctMod = numerator % divisor;
+
+			uint32_t testDiv, testMod;
+
+			testDiv = callback(numerator, divisor, &testMod);
+
+			if (correctDiv != testDiv || correctMod != testMod)
+			{
+				printf("ERROR: n = %u, d = %u\n", numerator, divisor);
+				printf("testDiv = %u, correct = %u\n", testDiv, correctDiv);
+				printf("testMod = %u, correct = %u\n", testMod, correctMod);
+			}
+
+		}
+	}
+
+	printf("TEST: %s END\n", name);
+
+	if (errorCount > 0)
+	{
+		printf("Total %i errors\n", errorCount);
+	}
+
+	return errorCount;
+}
 
 uint32_t RestoringDivision(const uint32_t a, const uint32_t b, uint32_t *remainder)
 {
