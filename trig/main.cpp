@@ -32,7 +32,9 @@ int main()
 
 	float step = 0.01f;
 
-	FoldTest("sin_folding", &std::sinf, &fold_sin_input, start, step, end);
+	//FoldTest("sin_folding", &std::sinf, &fold_sin_input, start, step, end);
+
+	SpeedTests();
 
 	return 0;
 }
@@ -91,12 +93,16 @@ void SpeedTests()
 
 	double refDuration = SpeedTest("library sine", &std::sinf, start, step, end, 1.0f);
 
-	SpeedTest("sine poly 3 safe", &sin_poly3_safe, start, step, end, 1.0f);
-	SpeedTest("sine poly 5 safe", &sin_poly5_safe, start, step, end, 1.0f);
+	SpeedTest("sine poly 3 safe", &sin_poly3_safe, start, step, end, refDuration);
+	SpeedTest("sine poly 5 safe", &sin_poly5_safe, start, step, end, refDuration);
+
+	SpeedTest("sine poly 3", &sin_poly3, start, step, end, refDuration);
+	SpeedTest("sine poly 5", &sin_poly5, start, step, end, refDuration);
 }
 
 double SpeedTest(const char* name, SimpleTrigCall callback, float start, float step, float end, double refDuration)
 {
+	printf("---------------------------------------------------------\n");
 	printf("SpeedTest : %s\n", name);
 
 	double time_start = Ceng_HighPrecisionTimer();

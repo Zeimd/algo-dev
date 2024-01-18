@@ -17,6 +17,9 @@ float fold_sin_input(float x);
 // Valid for any range
 float sin_poly3(float x);
 
+// Valid for any range
+float sin_poly5(float x);
+
 // Only valid for range [-pi/2,pi/2]
 float sin_poly3_safe(float x);
 

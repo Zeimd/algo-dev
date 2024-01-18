@@ -72,7 +72,7 @@ float fold_sin_input(float x)
 
 float sin_poly3(float x)
 {
-	return 0.0f;
+	return sin_poly3_safe(fold_sin_input(x));
 }
 
 float sin_poly3_safe(float x)
@@ -86,6 +86,11 @@ float sin_poly3_safe(float x)
 	float xp3 = x * xp2;
 
 	return a * xp3 + b * xp2 + c * x + d;
+}
+
+float sin_poly5(float x)
+{
+	return sin_poly5_safe(fold_sin_input(x));
 }
 
 float sin_poly5_safe(float x)
