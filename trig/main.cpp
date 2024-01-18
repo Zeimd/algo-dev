@@ -3,6 +3,8 @@
 #include <ceng/lib/timerlib.h>
 #include <cmath>
 
+#include <limits>
+
 #include "trig.h"
 
 #include <ceng/datatypes/aligned-buffer.h>
@@ -22,10 +24,11 @@ int FoldTest_v2(const char* name, SimpleTrigCall func, TwoParamFoldCall folding,
 int main()
 {
 	//float x = -269.514191f * degToRad;
-	float x = -359.470612f * degToRad;
-	
+	//float x = -359.470612f * degToRad;
+	float x = -719.427063f * degToRad;
+
 	float sign;
-	float folded = fold_sin_input(x);
+	float folded = fold_sin_input_sse_scalar(x);
 
 	float correct = sin(x);
 	float testVal = sin(folded);
@@ -44,10 +47,11 @@ int main()
 
 	//FoldTest("sin_folding", &std::sinf, &fold_sin_input, start, step, end);
 	//FoldTest("sin_folding_v3", &std::sinf, &fold_sin_input_v3, start, step, end);
+	//FoldTest("sin_folding_sse_scalar", &std::sinf, &fold_sin_input_sse_scalar, start, step, end);
 	//FoldTest_v2("sin_folding_v2", &std::sinf, &fold_sin_input_v2, start, step, end);
 
 	//SpeedTests();
-	AccuracyTests();
+	//AccuracyTests();
 
 	return 0;
 }
@@ -102,6 +106,8 @@ int FoldTest(const char* name, SimpleTrigCall func, SimpleTrigCall folding, floa
 
 	int errCount = 0;
 
+	int iters = 0;
+
 	while (x < end)
 	{
 		float folded = folding(x);
@@ -109,29 +115,54 @@ int FoldTest(const char* name, SimpleTrigCall func, SimpleTrigCall folding, floa
 		float correct = func(x);
 		float testVal = func(folded);
 
-		if (folded < -0.5f * pi || folded > 0.5f * pi)
+		if (folded == std::numeric_limits<float>::quiet_NaN() ||
+			folded == std::numeric_limits<float>::signaling_NaN())
 		{
-			printf("ERROR : input = %lf (%lf)\n", x, x * radToDeg);
-			printf("folded = %lf (%lf)\n", folded, folded * radToDeg);
-			printf("out or range [-pi/2,pi/2]\n");
+			if (errCount < 10)
+			{
+				printf("ERROR : input = %lf (%lf)\n", x, x * radToDeg);
+				printf("Folded is NaN\n");
+			}
+			errCount++;
+		}
+		else if (folded < -0.5f * pi || folded > 0.5f * pi)
+		{
+			if (errCount < 10)
+			{
+				printf("ERROR : input = %lf (%lf)\n", x, x * radToDeg);
+				printf("folded = %lf (%lf)\n", folded, folded * radToDeg);
+				printf("out or range [-pi/2,pi/2]\n");
+			}
 			errCount++;
 		}
 		else if (fabsf(correct - testVal) > 1.0e-3)
 		{
-			printf("ERROR : input = %lf (%lf)\n", x, x*radToDeg);
-			printf("folded = %lf (%lf)\n", folded, folded*radToDeg);
-			printf("func(folded) = %lf, expected = %lf\n", testVal, correct);
+			if (errCount < 10)
+			{
+				printf("ERROR : input = %lf (%lf)\n", x, x * radToDeg);
+				printf("folded = %lf (%lf)\n", folded, folded * radToDeg);
+				printf("func(folded) = %lf, expected = %lf\n", testVal, correct);
+			}
 			errCount++;
 		}
 
+		if (errCount == 10)
+		{
+			printf("Too many errors. Prints suppressed.\n");
+		}
+		
+
 		x += step;
+		++iters;
 	}
 
 	printf("FoldTest: END\n");
 
 	if (errCount)
 	{
-		printf("Total errors: %i\n", errCount);
+		double errorPercent = double(errCount) / double(iters) * 100.0;
+
+		printf("Total errors: %i out of %i (%lf)\n", errCount, iters, errorPercent);
 	}
 
 	return errCount;
