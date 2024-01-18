@@ -129,8 +129,6 @@ float fold_sin_input_v2(float x, float* out_sign)
 	return x3;
 }
 
-constexpr uint32_t floatSignMask = uint32_t(1) << 31;
-
 float fold_sin_input_v3(float x)
 {
 	float input = x;
@@ -243,6 +241,25 @@ float sin_poly5_v3(float x)
 	return sin_poly5_principal(fold_sin_input_v3(x));
 }
 
+float sin_poly3_v1_inline(float x)
+{
+	return sin_poly3_principal(fold_sin_input_v1_inline(x));
+}
+
+float sin_poly5_v1_inline(float x)
+{
+	return sin_poly5_principal(fold_sin_input_v1_inline(x));
+}
+
+float sin_poly3_v3_inline(float x)
+{
+	return sin_poly3_principal(fold_sin_input_v3_inline(x));
+}
+
+float sin_poly5_v3_inline(float x)
+{
+	return sin_poly5_principal(fold_sin_input_v3_inline(x));
+}
 
 float sin_poly3_principal(float x)
 {

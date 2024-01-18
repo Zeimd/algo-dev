@@ -142,15 +142,23 @@ void SpeedTests()
 
 	double refDuration = SpeedTest("library sine", &std::sinf, start, step, end, 1.0f);
 
+	SpeedTest("fold_sin_input", &fold_sin_input, start, step, end, refDuration);
+	SpeedTest("fold_sin_input_v3", &fold_sin_input_v3, start, step, end, refDuration);
+
 	SpeedTest("sine poly 3 principal", &sin_poly3_principal, start, step, end, refDuration);
+	SpeedTest("sine poly 5 principal", &sin_poly5_principal, start, step, end, refDuration);
+
 	SpeedTest("sine poly 3", &sin_poly3, start, step, end, refDuration);
 	SpeedTest("sine poly 3 v2", &sin_poly3_v2, start, step, end, refDuration);
 	SpeedTest("sine poly 3 v3", &sin_poly3_v3, start, step, end, refDuration);
-
-	SpeedTest("sine poly 5 principal", &sin_poly5_principal, start, step, end, refDuration);
+	SpeedTest("sine poly 3 v1 inline", &sin_poly3_v1_inline, start, step, end, refDuration);
+	SpeedTest("sine poly 3 v3 inline", &sin_poly3_v3_inline, start, step, end, refDuration);
+	
 	SpeedTest("sine poly 5", &sin_poly5, start, step, end, refDuration);
 	SpeedTest("sine poly 5 v2", &sin_poly5_v2, start, step, end, refDuration);
 	SpeedTest("sine poly 5 v3", &sin_poly5_v3, start, step, end, refDuration);
+	SpeedTest("sine poly 5 v1 inline", &sin_poly5_v1_inline, start, step, end, refDuration);
+	SpeedTest("sine poly 5 v3 inline", &sin_poly5_v3_inline, start, step, end, refDuration);
 }
 
 double SpeedTest(const char* name, SimpleTrigCall callback, float start, float step, float end, double refDuration)
