@@ -9,16 +9,74 @@ void SpeedTests();
 
 double SpeedTest(const char* name, SimpleTrigCall callback, float start, float step, float end, double refDuration);
 
+int FoldTest(const char* name, SimpleTrigCall func, SimpleTrigCall folding, float start, float step, float end);
+
 int main()
 {
-	float x = degToRad * 192.0f;
+	float x = -269.514191f * degToRad;
 
-	float y = fold_sin_input(x);
+	float folded = fold_sin_input(x);
 
-	printf("x = %lf, y = %lf\n", x, y);	
-	printf("sin(x) = %lf, sin(y) = %lf\n", sin(x), sin(y));
+	float correct = sin(x);
+	float testVal = sin(folded);
+
+	//if (fabsf(correct - testVal) > 1.0e-4)
+	//{
+		printf("input = %lf (%lf)\n", x, x * radToDeg);
+		printf("folded = %lf (%lf)\n", folded, folded * radToDeg);
+		printf("func(folded) = %lf, expected = %lf\n", testVal, correct);
+	//}
+
+	float start = -2.5*pi;
+	float end = 2.5*pi;
+
+	float step = 0.01f;
+
+	FoldTest("sin_folding", &std::sinf, &fold_sin_input, start, step, end);
 
 	return 0;
+}
+
+int FoldTest(const char* name, SimpleTrigCall func, SimpleTrigCall folding, float start, float step, float end)
+{
+	printf("FoldTest: %s\n", name);
+	float x = start;
+
+	int errCount = 0;
+
+	while (x < end)
+	{
+		float folded = fold_sin_input(x);
+
+		float correct = func(x);
+		float testVal = func(folded);
+
+		if (folded < -0.5f * pi || folded > 0.5f * pi)
+		{
+			printf("ERROR : input = %lf (%lf)\n", x, x * radToDeg);
+			printf("folded = %lf (%lf)\n", folded, folded * radToDeg);
+			printf("out or range [-pi/2,pi/2]\n");
+			errCount++;
+		}
+		else if (fabsf(correct - testVal) > 1.0e-3)
+		{
+			printf("ERROR : input = %lf (%lf)\n", x, x*radToDeg);
+			printf("folded = %lf (%lf)\n", folded, folded*radToDeg);
+			printf("func(folded) = %lf, expected = %lf\n", testVal, correct);
+			errCount++;
+		}
+
+		x += step;
+	}
+
+	printf("FoldTest: END\n");
+
+	if (errCount)
+	{
+		printf("Total errors: %i\n", errCount);
+	}
+
+	return errCount;
 }
 
 void SpeedTests()

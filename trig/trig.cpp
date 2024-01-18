@@ -5,9 +5,12 @@
 
 float fold_sin_input(float x)
 {
+	float input = x;
+#ifdef _DEBUG
 	printf(__func__);
 	printf("\n");
-	printf("input = %lf\n", x);
+	printf("input = %lf (%lf)\n", x, x*radToDeg);
+#endif
 
 	float sign = 1.0f;
 
@@ -17,7 +20,9 @@ float fold_sin_input(float x)
 		x = -x;
 	}
 
+#ifdef _DEBUG
 	printf("wrap by 2pi:\n");
+#endif
 
 	float div = x * invTwoPi;
 
@@ -25,22 +30,28 @@ float fold_sin_input(float x)
 
 	x = sign * frac * twoPi;
 
-	printf("x = %lf\n", x);
+#ifdef _DEBUG
+	printf("x = %lf (%lf)\n", x, x*radToDeg);
+	printf("sin(x) = %lf, expected = %lf\n", sin(x), sin(input));
 
 	printf("wrap if abs(x) > 3pi/2:\n");
+#endif
 
 	if (x > 1.5f*pi)
 	{
-		x -= pi;
+		x -= twoPi;
 	}
 	else if (x < -1.5f*pi)
 	{
-		x += pi;
+		x += twoPi;
 	}
 
-	printf("x = %lf\n", x);
+#ifdef _DEBUG
+	printf("x = %lf (%lf)\n", x, x * radToDeg);
+	printf("sin(x) = %lf, expected = %lf\n", sin(x), sin(input));
 	
 	printf("wrap if abs(x) > pi/2:\n");
+#endif
 
 	if (x > 0.5f * pi)
 	{
@@ -51,7 +62,10 @@ float fold_sin_input(float x)
 		x = -pi - x;
 	}
 
-	printf("x = %lf\n", x);
+#ifdef _DEBUG
+	printf("x = %lf (%lf)\n", x, x * radToDeg);
+	printf("sin(x) = %lf, expected = %lf\n", sin(x), sin(input));
+#endif
 	
 	return x;
 }
