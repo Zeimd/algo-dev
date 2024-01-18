@@ -93,8 +93,8 @@ void SpeedTests()
 
 	double refDuration = SpeedTest("library sine", &std::sinf, start, step, end, 1.0f);
 
-	SpeedTest("sine poly 3 safe", &sin_poly3_safe, start, step, end, refDuration);
-	SpeedTest("sine poly 5 safe", &sin_poly5_safe, start, step, end, refDuration);
+	SpeedTest("sine poly 3 principal", &sin_poly3_principal, start, step, end, refDuration);
+	SpeedTest("sine poly 5 principal", &sin_poly5_principal, start, step, end, refDuration);
 
 	SpeedTest("sine poly 3", &sin_poly3, start, step, end, refDuration);
 	SpeedTest("sine poly 5", &sin_poly5, start, step, end, refDuration);

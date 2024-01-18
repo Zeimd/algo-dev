@@ -21,7 +21,7 @@ float sin_poly3(float x);
 float sin_poly5(float x);
 
 // Only valid for range [-pi/2,pi/2]
-float sin_poly3_safe(float x);
+float sin_poly3_principal(float x);
 
 // Only valid for range [-pi/2,pi/2]
-float sin_poly5_safe(float x);
+float sin_poly5_principal(float x);

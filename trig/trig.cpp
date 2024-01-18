@@ -72,10 +72,10 @@ float fold_sin_input(float x)
 
 float sin_poly3(float x)
 {
-	return sin_poly3_safe(fold_sin_input(x));
+	return sin_poly3_principal(fold_sin_input(x));
 }
 
-float sin_poly3_safe(float x)
+float sin_poly3_principal(float x)
 {
 	const float a = -0.14506f;
 	const float b = -5.1833e-06f;
@@ -90,10 +90,10 @@ float sin_poly3_safe(float x)
 
 float sin_poly5(float x)
 {
-	return sin_poly5_safe(fold_sin_input(x));
+	return sin_poly5_principal(fold_sin_input(x));
 }
 
-float sin_poly5_safe(float x)
+float sin_poly5_principal(float x)
 {
 	const float a = 0.0075741f;
 	const float b = 1.9619e-07f;
