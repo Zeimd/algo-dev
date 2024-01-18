@@ -151,24 +151,29 @@ void AccuracyTests()
 
 	printf("steps = %i\n", inputSize);
 
-	float targetAccuracy = 0.01f;
+	float targetAccuracy = 0.005f;
 
 	//AccuracyTest("sine poly 3 principal", &std::sinf, &sin_poly3_principal, inputData, inputSize, targetAccuracy);
 	//AccuracyTest("sine poly 5 principal", &std::sinf, &sin_poly5_principal, inputData, inputSize, targetAccuracy);
 
 	AccuracyTest("sine poly 3", &std::sinf, &sin_poly3, inputData, inputSize, targetAccuracy);
+	/*
 	AccuracyTest("sine poly 3 v2", &std::sinf, &sin_poly3_v2, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 3 v3", &std::sinf, &sin_poly3_v3, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 3 v1 inline", &std::sinf, &sin_poly3_v1_inline, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 3 v2 inline", &std::sinf, &sin_poly3_v2_inline, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 3 v3 inline", &std::sinf, &sin_poly3_v3_inline, inputData, inputSize, targetAccuracy);
+	*/
 
 	AccuracyTest("sine poly 5", &std::sinf, &sin_poly5, inputData, inputSize, targetAccuracy);
+
+	/*
 	AccuracyTest("sine poly 5 v2", &std::sinf, &sin_poly5_v2, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 5 v3", &std::sinf, &sin_poly5_v3, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 5 v1 inline", &std::sinf, &sin_poly5_v1_inline, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 5 v2 inline", &std::sinf, &sin_poly5_v2_inline, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 5 v3 inline", &std::sinf, &sin_poly5_v3_inline, inputData, inputSize, targetAccuracy);
+	*/
 
 	Ceng::AlignedFree(inputData);
 }
@@ -180,24 +185,47 @@ int AccuracyTest(const char* name, SimpleTrigCall reference, SimpleTrigCall call
 
 	int errCount = 0;
 
+	double absErrTotal = 0.0;
+	double absErrDevTotal = 0.0;
+
 	for (int k = 0; k < inputSize; k++)
 	{
 		float testVal = (*callback)(inputData[k]);
 
 		float correct = reference(inputData[k]);
 
-		if (fabsf(correct - testVal) >targetAccuracy)
+		double absErr = fabs(correct - testVal);
+
+		double absErrDev = fabs(absErr - targetAccuracy);
+
+		absErrTotal += absErr;
+		absErrDevTotal += absErrDev;
+
+		if (absErr >targetAccuracy)
 		{
 			if (errCount < 10)
 			{
 				printf("ERROR : input = %lf (%lf)\n", inputData[k], inputData[k] * radToDeg);
-				printf("testFunc = %lf, expected = %lf\n", testVal, correct);
+				printf("\ttestFunc = %lf, expected = %lf\n", testVal, correct);
+				printf("\tabsErr = %lf, expected < %lf\n", absErr, targetAccuracy);
+				printf("\tabsErrDev = %lf\n", absErrDev);
 			}
 			errCount++;
+
+			if (errCount == 10)
+			{
+				printf("Too many errors. Prints suppressed.\n");
+			}
+
 		}
 	}
 
 	printf("END\n");
+
+	double avgAbsErr = absErrTotal / double(inputSize);
+	double avgAbsErrDev = absErrDevTotal / double(inputSize);
+
+	printf("avg abs err = %lf, avg abs err deviation = %lf\n", avgAbsErr, avgAbsErrDev);
 	
 	if (errCount)
 	{
