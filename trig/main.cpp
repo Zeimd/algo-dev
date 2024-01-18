@@ -5,9 +5,11 @@
 
 #include "trig.h"
 
+#include <ceng/datatypes/aligned-buffer.h>
+
 void SpeedTests();
 
-double SpeedTest(const char* name, SimpleTrigCall callback, float start, float step, float end, double refDuration);
+double SpeedTest(const char* name, SimpleTrigCall callback, float* inputData, int inputSize, double refDuration);
 
 int FoldTest(const char* name, SimpleTrigCall func, SimpleTrigCall folding, float start, float step, float end);
 
@@ -132,55 +134,57 @@ int FoldTest(const char* name, SimpleTrigCall func, SimpleTrigCall folding, floa
 
 void SpeedTests()
 {
-	float start = -pi * 4.0;
-	float end = pi * 4.0;
-	float step = 0.000001f;
+	int groups = 10000000;
+	int inputSize = 4 * groups;
 
-	int steps = (end - start) / step;
+	float* inputData = (float*)Ceng::AlignedMalloc(inputSize * sizeof(float), 16);
 
-	printf("steps = %i\n", steps);
+	for (int k = 0; k < inputSize; k++)
+	{
+		inputData[k] = rand() * 0.0001f;
+	}
 
-	double refDuration = SpeedTest("library sine", &std::sinf, start, step, end, 1.0f);
+	printf("steps = %i\n", inputSize);
 
-	SpeedTest("fold_sin_input", &fold_sin_input, start, step, end, refDuration);
-	SpeedTest("fold_sin_input_v3", &fold_sin_input_v3, start, step, end, refDuration);
+	double refDuration = SpeedTest("library sine", &std::sinf, inputData, inputSize, 1.0f);
 
-	SpeedTest("sine poly 3 principal", &sin_poly3_principal, start, step, end, refDuration);
-	SpeedTest("sine poly 5 principal", &sin_poly5_principal, start, step, end, refDuration);
+	SpeedTest("fold_sin_input", &fold_sin_input, inputData, inputSize, refDuration);
+	SpeedTest("fold_sin_input_v3", &fold_sin_input_v3, inputData, inputSize, refDuration);
 
-	SpeedTest("sine poly 3", &sin_poly3, start, step, end, refDuration);
-	SpeedTest("sine poly 3 v2", &sin_poly3_v2, start, step, end, refDuration);
-	SpeedTest("sine poly 3 v3", &sin_poly3_v3, start, step, end, refDuration);
-	SpeedTest("sine poly 3 v1 inline", &sin_poly3_v1_inline, start, step, end, refDuration);
-	SpeedTest("sine poly 3 v2 inline", &sin_poly3_v2_inline, start, step, end, refDuration);
-	SpeedTest("sine poly 3 v3 inline", &sin_poly3_v3_inline, start, step, end, refDuration);
+	SpeedTest("sine poly 3 principal", &sin_poly3_principal, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 principal", &sin_poly5_principal, inputData, inputSize, refDuration);
+
+	SpeedTest("sine poly 3", &sin_poly3, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 v2", &sin_poly3_v2, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 v3", &sin_poly3_v3, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 v1 inline", &sin_poly3_v1_inline, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 v2 inline", &sin_poly3_v2_inline, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 v3 inline", &sin_poly3_v3_inline, inputData, inputSize, refDuration);
 	
-	SpeedTest("sine poly 5", &sin_poly5, start, step, end, refDuration);
-	SpeedTest("sine poly 5 v2", &sin_poly5_v2, start, step, end, refDuration);
-	SpeedTest("sine poly 5 v3", &sin_poly5_v3, start, step, end, refDuration);
-	SpeedTest("sine poly 5 v1 inline", &sin_poly5_v1_inline, start, step, end, refDuration);
-	SpeedTest("sine poly 5 v2 inline", &sin_poly5_v2_inline, start, step, end, refDuration);
-	SpeedTest("sine poly 5 v3 inline", &sin_poly5_v3_inline, start, step, end, refDuration);
+	SpeedTest("sine poly 5", &sin_poly5, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 v2", &sin_poly5_v2, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 v3", &sin_poly5_v3, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 v1 inline", &sin_poly5_v1_inline, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 v2 inline", &sin_poly5_v2_inline, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 v3 inline", &sin_poly5_v3_inline, inputData, inputSize, refDuration);
+
+	Ceng::AlignedFree(inputData);
 }
 
-double SpeedTest(const char* name, SimpleTrigCall callback, float start, float step, float end, double refDuration)
+double SpeedTest(const char* name, SimpleTrigCall callback, float* inputData, int inputSize, double refDuration)
 {
 	printf("---------------------------------------------------------\n");
 	printf("SpeedTest : %s\n", name);
 
-	double time_start = Ceng_HighPrecisionTimer();
-
-	float x = start;
-
 	float total = 0.0f;
 
-	while(x < end)
+	double time_start = Ceng_HighPrecisionTimer();
+
+	for (int k = 0; k < inputSize; k++)
 	{
-		float res = (*callback)(x);
+		float res = (*callback)(inputData[k]);
 
 		total += res;
-
-		x += step;
 	}
 
 	double time_end = Ceng_HighPrecisionTimer();
