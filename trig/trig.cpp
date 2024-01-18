@@ -69,6 +69,166 @@ float fold_sin_input(float x)
 	return x3;
 }
 
+float fold_sin_input_sse_scalar(float x)
+{
+	float result;
+
+	float x1, x2, x3;
+
+	__asm
+	{
+		/*
+		float input = x;
+
+		uint32_t* xPtr = (uint32_t*)&x;
+
+		uint32_t sign = *xPtr & floatSignMask;
+
+		// x = abs(x)
+		*xPtr &= ~floatSignMask;
+
+		float div = x * invTwoPi;
+
+		float frac = div - floor(div);
+
+		float x1 = frac * twoPi;
+
+		xPtr = (uint32_t*)&x1;
+
+		*xPtr |= sign;
+		*/
+
+		movss xmm0, x;
+
+		movss xmm1, xmm0;
+		movss xmm4, floatSignMask;
+		movss xmm5, floatAbsMask;
+
+		andps xmm1, xmm4;
+		andps xmm0, xmm5;
+
+		// xmm1 = sign(x)
+		// xmm0 = abs(x)
+
+		mulss xmm0, invTwoPi;
+
+		movss xmm2, xmm0;
+		cvttps2dq xmm2, xmm2;
+		cvtdq2ps xmm2, xmm2;
+
+		subss xmm0, xmm2;
+
+		mulss xmm0, twoPi;
+
+		orps xmm0, xmm1;
+
+		// xmm0 = x1 = sign(x) * frac(x / 2pi) * 2pi
+
+#ifdef _DEBUG
+		movss x1, xmm0;
+#endif
+
+		/*
+		if (fabsf(x2) > 1.5f * pi)
+		{
+			xPtr = (uint32_t*)&x2;
+			sign = *xPtr & floatSignMask;
+
+			float temp = -twoPi;
+			xPtr = (uint32_t*)&temp;
+			*xPtr ^= sign;
+
+			x2 += temp;
+		}
+		*/
+
+		movss xmm1, xmm0;
+		andps xmm1, xmm4;
+		movss xmm2, xmm0;
+		andps xmm2, xmm5;
+
+		// xmm1 = sign(x1)
+		// xmm2 = abs(x1)
+
+		movss xmm3, oneHalfPi;
+		cmpltps xmm3, xmm2;
+
+		// xmm3 = abs(x1) > 1.5pi 
+
+		movss xmm6, minusTwoPi;
+		andps xmm3, xmm6;
+		xorps xmm3, xmm1;
+		addss xmm0, xmm3;
+
+		// xmm0 = x2
+
+#ifdef _DEBUG
+		movss x2, xmm0;
+#endif
+
+		/*
+		if (fabsf(x3) > 0.5f * pi)
+		{
+			xPtr = (uint32_t*)&x3;
+			sign = *xPtr & floatSignMask;
+
+			float temp = pi;
+			xPtr = (uint32_t*)&temp;
+			*xPtr |= sign;
+
+			x3 = temp - x3;
+		}
+		*/
+
+		movss xmm1, xmm0;
+		andps xmm1, xmm4;
+		movss xmm2, xmm0;
+		andps xmm2, xmm5;
+
+		// xmm1 = sign(x2)
+		// xmm2 = abs(x2)
+
+		movss xmm3, halfPi;
+		cmpltss xmm3, xmm2;
+
+		// xmm3 = abs(x2) > halfPi
+		
+		movss xmm6, pi;
+		andps xmm3, xmm6;
+		orps xmm3, xmm1;
+		subss xmm3, xmm0;
+
+#ifdef _DEBUG
+		movss x3, xmm3;
+#endif
+
+
+		movss result, xmm3;
+	}
+
+#ifdef _DEBUG
+	printf(__func__);
+	printf("\n");
+	printf("input = %lf (%lf)\n", x, x* radToDeg);
+
+	printf("wrap by 2pi:\n");
+
+	printf("x1 = %lf (%lf)\n", x1, x1* radToDeg);
+	printf("sin(x1) = %lf, expected = %lf\n", sin(x1), sin(x));
+
+	printf("wrap if abs(x) > 3pi/2:\n");
+
+	printf("x2 = %lf (%lf)\n", x2, x2* radToDeg);
+	printf("sin(x2) = %lf, expected = %lf\n", sin(x2), sin(x));
+
+	printf("wrap if abs(x) > pi/2:\n");
+
+	printf("x3 = %lf (%lf)\n", x3, x3* radToDeg);
+	printf("sin(x3) = %lf, expected = %lf\n", sin(x3), sin(x));
+#endif
+	return result;
+}
+
 float fold_sin_input_v2(float x, float* out_sign)
 {
 	float input = x;

@@ -1,9 +1,16 @@
 
 #include <stdint.h>
 
+const uint32_t floatSignMask = uint32_t(1) << 31;
+const uint32_t floatAbsMask = ~floatSignMask;
+
 constexpr double piD = 3.14159265358979323846;
 constexpr float pi = 3.14159265358979323846f;
 constexpr float twoPi = float(2.0 * piD);
+constexpr float minusTwoPi = -float(2.0 * piD);
+
+constexpr float oneHalfPi = float(1.5 * piD);
+constexpr float halfPi = float(0.5 * piD);
 
 constexpr float invPi = float(1.0 / piD);
 constexpr float invTwoPi = float(0.5 / piD);
@@ -16,6 +23,9 @@ typedef float(*TwoParamFoldCall)(float x,float* out_sign);
 
 // Fold input to range [-pi/2,pi/2]
 float fold_sin_input(float x);
+
+// Fold input to range [-pi/2,pi/2]
+float fold_sin_input_sse_scalar(float x);
 
 // Fold input to range [-pi/2,pi/2]
 float fold_sin_input_v2(float x, float* out_sign);
@@ -146,9 +156,6 @@ __forceinline float fold_sin_input_v2_inline(float x, float* out_sign)
 
 	return x3;
 }
-
-
-constexpr uint32_t floatSignMask = uint32_t(1) << 31;
 
 __forceinline float fold_sin_input_v3_inline(float x)
 {
