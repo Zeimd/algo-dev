@@ -285,11 +285,13 @@ void SpeedTests()
 
 	SpeedTest("fold_sin_input", &fold_sin_input, inputData, inputSize, refDuration);
 	SpeedTest("fold_sin_input_v3", &fold_sin_input_v3, inputData, inputSize, refDuration);
+	SpeedTest("fold_sin_input_sse_scalar", &fold_sin_input_sse_scalar, inputData, inputSize, refDuration);
 
 	SpeedTest("sine poly 3 principal", &sin_poly3_principal, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 principal", &sin_poly5_principal, inputData, inputSize, refDuration);
 
 	SpeedTest("sine poly 3", &sin_poly3, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 sse_scalar", &sin_poly3_sse_scalar, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 v2", &sin_poly3_v2, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 v3", &sin_poly3_v3, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 v1 inline", &sin_poly3_v1_inline, inputData, inputSize, refDuration);
@@ -297,6 +299,7 @@ void SpeedTests()
 	SpeedTest("sine poly 3 v3 inline", &sin_poly3_v3_inline, inputData, inputSize, refDuration);
 	
 	SpeedTest("sine poly 5", &sin_poly5, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 sse_scalar", &sin_poly5_sse_scalar, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 v2", &sin_poly5_v2, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 v3", &sin_poly5_v3, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 v1 inline", &sin_poly5_v1_inline, inputData, inputSize, refDuration);

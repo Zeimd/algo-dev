@@ -396,6 +396,16 @@ float sin_poly5(float x)
 	return sin_poly5_principal(fold_sin_input(x));
 }
 
+float sin_poly3_sse_scalar(float x)
+{
+	return sin_poly3_principal(fold_sin_input_sse_scalar(x));
+}
+
+float sin_poly5_sse_scalar(float x)
+{
+	return sin_poly5_principal(fold_sin_input_sse_scalar(x));
+}
+
 float sin_poly3_v2(float x)
 {
 	float sign;

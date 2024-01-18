@@ -52,6 +52,12 @@ float sin_poly3_v3(float x);
 float sin_poly5_v3(float x);
 
 // Valid for any range
+float sin_poly3_sse_scalar(float x);
+
+// Valid for any range
+float sin_poly5_sse_scalar(float x);
+
+// Valid for any range
 float sin_poly3_v1_inline(float x);
 
 // Valid for any range
