@@ -531,13 +531,13 @@ float sin_poly3_principal_horner_sse_scalar(float x)
 
 		movss xmm1, a;
 
-		mulss xmm1, x;
+		mulss xmm1, xmm0;
 		addss xmm1, b;
 
-		mulss xmm1, x;
+		mulss xmm1, xmm0;
 		addss xmm1, c;
 
-		mulss xmm1, x;
+		mulss xmm1, xmm0;
 		addss xmm1, d;
 
 		movss result, xmm1;
@@ -566,19 +566,19 @@ float sin_poly5_principal_horner_sse_scalar(float x)
 
 		movss xmm1, a;
 
-		mulss xmm1, x;
+		mulss xmm1, xmm0;
 		addss xmm1, b;
 
-		mulss xmm1, x;
+		mulss xmm1, xmm0;
 		addss xmm1, c;
 
-		mulss xmm1, x;
+		mulss xmm1, xmm0;
 		addss xmm1, d;
 
-		mulss xmm1, x;
+		mulss xmm1, xmm0;
 		addss xmm1, e;
 
-		mulss xmm1, x;
+		mulss xmm1, xmm0;
 		addss xmm1, f;
 
 		movss result, xmm1;
