@@ -204,8 +204,8 @@ float fold_sin_input_sse_scalar(float x)
 		// xmm3 = abs(x2) > halfPi
 		
 		movss xmm6, pi;
-		andps xmm3, xmm6;
-		orps xmm3, xmm1;
+		orps xmm6, xmm1;
+		andps xmm3, xmm6;		
 		subss xmm3, xmm0;
 
 #ifdef _DEBUG
