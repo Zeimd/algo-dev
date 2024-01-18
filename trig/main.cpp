@@ -9,6 +9,10 @@
 
 void SpeedTests();
 
+void AccuracyTests();
+
+int AccuracyTest(const char* name, SimpleTrigCall reference, SimpleTrigCall callback, float* inputData, int inputSize, float targetAccuracy);
+
 double SpeedTest(const char* name, SimpleTrigCall callback, float* inputData, int inputSize, double refDuration);
 
 int FoldTest(const char* name, SimpleTrigCall func, SimpleTrigCall folding, float start, float step, float end);
@@ -42,7 +46,8 @@ int main()
 	//FoldTest("sin_folding_v3", &std::sinf, &fold_sin_input_v3, start, step, end);
 	//FoldTest_v2("sin_folding_v2", &std::sinf, &fold_sin_input_v2, start, step, end);
 
-	SpeedTests();
+	//SpeedTests();
+	AccuracyTests();
 
 	return 0;
 }
@@ -129,6 +134,77 @@ int FoldTest(const char* name, SimpleTrigCall func, SimpleTrigCall folding, floa
 		printf("Total errors: %i\n", errCount);
 	}
 
+	return errCount;
+}
+
+void AccuracyTests()
+{
+	int groups = 10000000;
+	int inputSize = 4 * groups;
+
+	float* inputData = (float*)Ceng::AlignedMalloc(inputSize * sizeof(float), 16);
+
+	for (int k = 0; k < inputSize; k++)
+	{
+		inputData[k] = rand() * 0.0001f;
+	}
+
+	printf("steps = %i\n", inputSize);
+
+	float targetAccuracy = 0.01f;
+
+	//AccuracyTest("sine poly 3 principal", &std::sinf, &sin_poly3_principal, inputData, inputSize, targetAccuracy);
+	//AccuracyTest("sine poly 5 principal", &std::sinf, &sin_poly5_principal, inputData, inputSize, targetAccuracy);
+
+	AccuracyTest("sine poly 3", &std::sinf, &sin_poly3, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 3 v2", &std::sinf, &sin_poly3_v2, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 3 v3", &std::sinf, &sin_poly3_v3, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 3 v1 inline", &std::sinf, &sin_poly3_v1_inline, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 3 v2 inline", &std::sinf, &sin_poly3_v2_inline, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 3 v3 inline", &std::sinf, &sin_poly3_v3_inline, inputData, inputSize, targetAccuracy);
+
+	AccuracyTest("sine poly 5", &std::sinf, &sin_poly5, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 5 v2", &std::sinf, &sin_poly5_v2, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 5 v3", &std::sinf, &sin_poly5_v3, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 5 v1 inline", &std::sinf, &sin_poly5_v1_inline, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 5 v2 inline", &std::sinf, &sin_poly5_v2_inline, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 5 v3 inline", &std::sinf, &sin_poly5_v3_inline, inputData, inputSize, targetAccuracy);
+
+	Ceng::AlignedFree(inputData);
+}
+
+int AccuracyTest(const char* name, SimpleTrigCall reference, SimpleTrigCall callback, float* inputData, int inputSize, float targetAccuracy)
+{
+	printf("---------------------------------------------------------\n");
+	printf("AccuracyTest : %s\n", name);
+
+	int errCount = 0;
+
+	for (int k = 0; k < inputSize; k++)
+	{
+		float testVal = (*callback)(inputData[k]);
+
+		float correct = reference(inputData[k]);
+
+		if (fabsf(correct - testVal) >targetAccuracy)
+		{
+			if (errCount < 10)
+			{
+				printf("ERROR : input = %lf (%lf)\n", inputData[k], inputData[k] * radToDeg);
+				printf("testFunc = %lf, expected = %lf\n", testVal, correct);
+			}
+			errCount++;
+		}
+	}
+
+	printf("END\n");
+	
+	if (errCount)
+	{
+		double errorPercent = double(errCount) / double(inputSize) * 100.0;
+
+		printf("Total errors: %i out of %i (%lf)\n", errCount,inputSize,errorPercent);
+	}
 	return errCount;
 }
 
