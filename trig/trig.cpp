@@ -396,6 +396,16 @@ float sin_poly5(float x)
 	return sin_poly5_principal(fold_sin_input(x));
 }
 
+float sin_poly3_horner(float x)
+{
+	return sin_poly3_principal_horner(fold_sin_input(x));
+}
+
+float sin_poly5_horner(float x)
+{
+	return sin_poly5_principal_horner(fold_sin_input(x));
+}
+
 float sin_poly3_sse_scalar(float x)
 {
 	return sin_poly3_principal(fold_sin_input_sse_scalar(x));
@@ -470,6 +480,30 @@ float sin_poly3_v3_inline(float x)
 float sin_poly5_v3_inline(float x)
 {
 	return sin_poly5_principal(fold_sin_input_v3_inline(x));
+}
+
+// Valid for any range
+float sin_poly3_principal_horner(float x)
+{
+	const float a = -0.14506f;
+	const float b = -5.1833e-06f;
+	const float c = 0.98879f;
+	const float d = 2.5585e-06;
+
+	return x * (x * (a * x + b) + c) + d;
+}
+
+// Valid for any range
+float sin_poly5_principal_horner(float x)
+{
+	const float a = 0.0075741f;
+	const float b = 1.9619e-07f;
+	const float c = -0.16583f;
+	const float d = -3.228e-07;
+	const float e = 0.99977;
+	const float f = 5.6906e-08;
+
+	return x * (x * (x * (x * (a * x + b) + c) + d) + e) + f;
 }
 
 float sin_poly3_principal(float x)

@@ -40,6 +40,12 @@ float sin_poly3(float x);
 float sin_poly5(float x);
 
 // Valid for any range
+float sin_poly3_horner(float x);
+
+// Valid for any range
+float sin_poly5_horner(float x);
+
+// Valid for any range
 float sin_poly3_v2(float x);
 
 // Valid for any range
@@ -82,6 +88,13 @@ float sin_poly3_principal(float x);
 // Only valid for range [-pi/2,pi/2]
 // Uses least squares error polynomial fit from Octave
 float sin_poly5_principal(float x);
+
+// Valid for any range
+float sin_poly3_principal_horner(float x);
+
+// Valid for any range
+float sin_poly5_principal_horner(float x);
+
 
 __forceinline float fold_sin_input_v1_inline(float x)
 {
