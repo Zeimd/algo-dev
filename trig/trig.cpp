@@ -408,13 +408,25 @@ float sin_poly5_horner(float x)
 
 float sin_poly3_sse_scalar(float x)
 {
-	return sin_poly3_principal(fold_sin_input_sse_scalar(x));
+	return sin_poly3_principal_horner_sse_scalar(fold_sin_input_sse_scalar(x));
 }
 
 float sin_poly5_sse_scalar(float x)
 {
-	return sin_poly5_principal(fold_sin_input_sse_scalar(x));
+	return sin_poly5_principal_horner_sse_scalar(fold_sin_input_sse_scalar(x));
 }
+
+float sin_poly3_sse_scalar_inline_fold(float x)
+{
+	return sin_poly3_principal_horner_sse_scalar(fold_sin_input_sse_scalar_inline(x));
+}
+
+float sin_poly5_sse_scalar_inline_fold(float x)
+{
+	return sin_poly5_principal_horner_sse_scalar(fold_sin_input_sse_scalar_inline(x));
+}
+
+
 
 float sin_poly3_v2(float x)
 {
@@ -482,7 +494,6 @@ float sin_poly5_v3_inline(float x)
 	return sin_poly5_principal(fold_sin_input_v3_inline(x));
 }
 
-// Valid for any range
 float sin_poly3_principal_horner(float x)
 {
 	const float a = -0.14506f;
@@ -493,7 +504,6 @@ float sin_poly3_principal_horner(float x)
 	return x * (x * (a * x + b) + c) + d;
 }
 
-// Valid for any range
 float sin_poly5_principal_horner(float x)
 {
 	const float a = 0.0075741f;
@@ -504,6 +514,80 @@ float sin_poly5_principal_horner(float x)
 	const float f = 5.6906e-08;
 
 	return x * (x * (x * (x * (a * x + b) + c) + d) + e) + f;
+}
+
+float sin_poly3_principal_horner_sse_scalar(float x)
+{
+	const float a = -0.14506f;
+	const float b = -5.1833e-06f;
+	const float c = 0.98879f;
+	const float d = 2.5585e-06;
+
+	float result;
+
+	__asm
+	{
+		movss xmm0, x;
+
+		movss xmm1, a;
+
+		mulss xmm1, x;
+		addss xmm1, b;
+
+		mulss xmm1, x;
+		addss xmm1, c;
+
+		mulss xmm1, x;
+		addss xmm1, d;
+
+		movss result, xmm1;
+		
+	}
+
+	return result;
+
+	//return x * (x * (a * x + b) + c) + d;
+}
+
+float sin_poly5_principal_horner_sse_scalar(float x)
+{
+	const float a = 0.0075741f;
+	const float b = 1.9619e-07f;
+	const float c = -0.16583f;
+	const float d = -3.228e-07;
+	const float e = 0.99977;
+	const float f = 5.6906e-08;
+
+	float result;
+
+	__asm
+	{
+		movss xmm0, x;
+
+		movss xmm1, a;
+
+		mulss xmm1, x;
+		addss xmm1, b;
+
+		mulss xmm1, x;
+		addss xmm1, c;
+
+		mulss xmm1, x;
+		addss xmm1, d;
+
+		mulss xmm1, x;
+		addss xmm1, e;
+
+		mulss xmm1, x;
+		addss xmm1, f;
+
+		movss result, xmm1;
+
+	}
+
+	return result;
+
+	//return x * (x * (x * (x * (a * x + b) + c) + d) + e) + f;
 }
 
 float sin_poly3_principal(float x)
