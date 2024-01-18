@@ -3,6 +3,8 @@
 #include <cmath>
 #include "trig.h"
 
+#include <stdint.h>
+
 float fold_sin_input(float x)
 {
 	float input = x;
@@ -127,46 +129,56 @@ float fold_sin_input_v2(float x, float* out_sign)
 	return x3;
 }
 
+constexpr uint32_t floatSignMask = uint32_t(1) << 31;
+
 float fold_sin_input_v3(float x)
 {
 	float input = x;
 
-	float sign = 1.0f;
+	uint32_t* xPtr = (uint32_t*)&x;
 
-	if (x < 0)
-	{
-		sign = -1.0f;
-		x = -x;
-	}
+	uint32_t sign = *xPtr & floatSignMask;
+
+	// x = abs(x)
+	*xPtr &= ~floatSignMask;
 
 	float div = x * invTwoPi;
 
 	float frac = div - floor(div);
 
-	float x1 = sign * frac * twoPi;
+	float x1 = frac * twoPi;
+
+	xPtr = (uint32_t*)&x1;
+
+	*xPtr |= sign;
 
 	float x2 = x1;
 
-	if (x2 > 1.5f * pi)
+	if (fabsf(x2) > 1.5f * pi)
 	{
-		x2 = x2 - twoPi;
-	}
-	else if (x2 < -1.5f * pi)
-	{
-		x2 = x2 + twoPi;
+		xPtr = (uint32_t*)&x2;
+		sign = *xPtr & floatSignMask;
+
+		float temp = -twoPi;
+		xPtr = (uint32_t*)&temp;
+		*xPtr ^= sign;
+
+		x2 += temp;
 	}
 
 	float x3 = x2;
 
-	if (x3 > 0.5f * pi)
+	if (fabsf(x3) > 0.5f * pi)
 	{
-		x3 = pi - x3;
-	}
-	else if (x3 < -0.5f * pi)
-	{
-		x3 = -pi - x3;
-	}
+		xPtr = (uint32_t*)&x3;
+		sign = *xPtr & floatSignMask;
 
+		float temp = pi;
+		xPtr = (uint32_t*)&temp;
+		*xPtr |= sign;
+
+		x3 = temp - x3;
+	}
 
 #ifdef _DEBUG
 	printf(__func__);
@@ -220,6 +232,17 @@ float sin_poly5_v2(float x)
 
 	return sign * sin_poly5_principal(folded);
 }
+
+float sin_poly3_v3(float x)
+{
+	return sin_poly3_principal(fold_sin_input_v3(x));
+}
+
+float sin_poly5_v3(float x)
+{
+	return sin_poly5_principal(fold_sin_input_v3(x));
+}
+
 
 float sin_poly3_principal(float x)
 {

@@ -32,6 +32,12 @@ float sin_poly3_v2(float x);
 // Valid for any range
 float sin_poly5_v2(float x);
 
+// Valid for any range
+float sin_poly3_v3(float x);
+
+// Valid for any range
+float sin_poly5_v3(float x);
+
 // Only valid for range [-pi/2,pi/2]
 float sin_poly3_principal(float x);
 

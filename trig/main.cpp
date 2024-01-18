@@ -31,16 +31,16 @@ int main()
 		printf("func(folded) = %lf, expected = %lf\n", testVal, correct);
 	//}
 
-	float start = -2.5*pi;
-	float end = 2.5*pi;
+	float start = -4.0*pi;
+	float end = 4.0*pi;
 
 	float step = 0.01f;
 
 	//FoldTest("sin_folding", &std::sinf, &fold_sin_input, start, step, end);
-	FoldTest("sin_folding_v3", &std::sinf, &fold_sin_input_v3, start, step, end);
+	//FoldTest("sin_folding_v3", &std::sinf, &fold_sin_input_v3, start, step, end);
 	//FoldTest_v2("sin_folding_v2", &std::sinf, &fold_sin_input_v2, start, step, end);
 
-	//SpeedTests();
+	SpeedTests();
 
 	return 0;
 }
@@ -132,8 +132,8 @@ int FoldTest(const char* name, SimpleTrigCall func, SimpleTrigCall folding, floa
 
 void SpeedTests()
 {
-	float start = -pi * 0.5;
-	float end = pi * 0.5;
+	float start = -pi * 4.0;
+	float end = pi * 4.0;
 	float step = 0.000001f;
 
 	int steps = (end - start) / step;
@@ -143,13 +143,14 @@ void SpeedTests()
 	double refDuration = SpeedTest("library sine", &std::sinf, start, step, end, 1.0f);
 
 	SpeedTest("sine poly 3 principal", &sin_poly3_principal, start, step, end, refDuration);
-	SpeedTest("sine poly 5 principal", &sin_poly5_principal, start, step, end, refDuration);
-
 	SpeedTest("sine poly 3", &sin_poly3, start, step, end, refDuration);
-	SpeedTest("sine poly 5", &sin_poly5, start, step, end, refDuration);
-
 	SpeedTest("sine poly 3 v2", &sin_poly3_v2, start, step, end, refDuration);
+	SpeedTest("sine poly 3 v3", &sin_poly3_v3, start, step, end, refDuration);
+
+	SpeedTest("sine poly 5 principal", &sin_poly5_principal, start, step, end, refDuration);
+	SpeedTest("sine poly 5", &sin_poly5, start, step, end, refDuration);
 	SpeedTest("sine poly 5 v2", &sin_poly5_v2, start, step, end, refDuration);
+	SpeedTest("sine poly 5 v3", &sin_poly5_v3, start, step, end, refDuration);
 }
 
 double SpeedTest(const char* name, SimpleTrigCall callback, float start, float step, float end, double refDuration)
