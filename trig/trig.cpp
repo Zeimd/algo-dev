@@ -75,6 +75,8 @@ float fold_sin_input_sse_scalar(float x)
 
 	float x1, x2, x3;
 
+	float s0, s1, s2;
+
 	__asm
 	{
 		/*
@@ -126,6 +128,7 @@ float fold_sin_input_sse_scalar(float x)
 
 #ifdef _DEBUG
 		movss x1, xmm0;
+		movss s0, xmm1;
 #endif
 
 		/*
@@ -146,6 +149,10 @@ float fold_sin_input_sse_scalar(float x)
 		andps xmm1, xmm4;
 		movss xmm2, xmm0;
 		andps xmm2, xmm5;
+
+#ifdef _DEBUG
+		movss s1, xmm1;
+#endif
 
 		// xmm1 = sign(x1)
 		// xmm2 = abs(x1)
@@ -185,6 +192,9 @@ float fold_sin_input_sse_scalar(float x)
 		movss xmm2, xmm0;
 		andps xmm2, xmm5;
 
+#ifdef _DEBUG
+		movss s2, xmm1;
+#endif
 		// xmm1 = sign(x2)
 		// xmm2 = abs(x2)
 
@@ -210,17 +220,19 @@ float fold_sin_input_sse_scalar(float x)
 	printf(__func__);
 	printf("\n");
 	printf("input = %lf (%lf)\n", x, x* radToDeg);
+	printf("sign(x) = %lf\n", s0);
 
 	printf("wrap by 2pi:\n");
 
 	printf("x1 = %lf (%lf)\n", x1, x1* radToDeg);
+	printf("sign(x1) = %lf\n", s1);
 	printf("sin(x1) = %lf, expected = %lf\n", sin(x1), sin(x));
 
 	printf("wrap if abs(x) > 3pi/2:\n");
 
 	printf("x2 = %lf (%lf)\n", x2, x2* radToDeg);
+	printf("sign(x2) = %lf\n", s2);
 	printf("sin(x2) = %lf, expected = %lf\n", sin(x2), sin(x));
-
 	printf("wrap if abs(x) > pi/2:\n");
 
 	printf("x3 = %lf (%lf)\n", x3, x3* radToDeg);
