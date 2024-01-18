@@ -20,6 +20,7 @@ float fold_sin_input(float x);
 // Fold input to range [-pi/2,pi/2]
 float fold_sin_input_v2(float x, float* out_sign);
 
+// Fold input to range [-pi/2,pi/2]
 float fold_sin_input_v3(float x);
 
 // Valid for any range
@@ -59,9 +60,11 @@ float sin_poly3_v3_inline(float x);
 float sin_poly5_v3_inline(float x);
 
 // Only valid for range [-pi/2,pi/2]
+// Uses least squares error polynomial fit from Octave
 float sin_poly3_principal(float x);
 
 // Only valid for range [-pi/2,pi/2]
+// Uses least squares error polynomial fit from Octave
 float sin_poly5_principal(float x);
 
 __forceinline float fold_sin_input_v1_inline(float x)
