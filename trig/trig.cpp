@@ -21,26 +21,26 @@ float fold_sin_input(float x)
 
 	float x1 = sign * frac * twoPi;
 
-	float x2;
+	float x2 = x1;
 
-	if (x1 > 1.5f*pi)
+	if (x2 > 1.5f*pi)
 	{
-		x2 = x1 - twoPi;
+		x2 = x2 - twoPi;
 	}
-	else if (x1 < -1.5f*pi)
+	else if (x2 < -1.5f*pi)
 	{
-		x2 += x1 - twoPi;
+		x2 = x2 + twoPi;
 	}
 
-	float x3;
+	float x3 = x2;
 
-	if (x2 > 0.5f * pi)
+	if (x3 > 0.5f * pi)
 	{
-		x3 = pi - x2;
+		x3 = pi - x3;
 	}
-	else if (x2 < -0.5f * pi)
+	else if (x3 < -0.5f * pi)
 	{
-		x3 = -pi - x2;
+		x3 = -pi - x3;
 	}
 
 #ifdef _DEBUG
@@ -67,7 +67,67 @@ float fold_sin_input(float x)
 	return x3;
 }
 
-float fold_sin_input_v2(float x)
+float fold_sin_input_v2(float x, float* out_sign)
+{
+	float input = x;
+
+	float sign = 1.0f;
+
+	if (x < 0)
+	{
+		sign = -1.0f;
+		x = -x;
+	}
+
+	float div = x * invTwoPi;
+
+	float frac = div - floor(div);
+
+	float x1 = frac * twoPi;
+
+	float x2 = x1;
+
+	if (x1 > 1.5f * pi)
+	{
+		x2 = x1 - twoPi;
+	}
+
+	float x3 = x2;
+
+	if (x2 > 0.5f * pi)
+	{
+		x3 = pi - x2;
+	}
+
+#ifdef _DEBUG
+	printf(__func__);
+	printf("\n");
+	printf("input = %lf (%lf)\n", x, x * radToDeg);
+
+	printf("sign = %lf\n", sign);
+
+	printf("wrap by 2pi:\n");
+
+	printf("x1 = %lf (%lf)\n", x1, x1 * radToDeg);
+	printf("sin(x1) = %lf, expected = %lf\n", sin(x1), sin(input));
+
+	printf("wrap if abs(x) > 3pi/2:\n");
+
+	printf("x2 = %lf (%lf)\n", x2, x2 * radToDeg);
+	printf("sin(x2) = %lf, expected = %lf\n", sin(x2), sin(input));
+
+	printf("wrap if abs(x) > pi/2:\n");
+
+	printf("x3 = %lf (%lf)\n", x3, x3 * radToDeg);
+	printf("sin(x3) = %lf, expected = %lf\n", sin(x3), sin(input));
+#endif
+
+	* out_sign = sign;
+
+	return x3;
+}
+
+float fold_sin_input_v3(float x)
 {
 	float input = x;
 
@@ -87,25 +147,26 @@ float fold_sin_input_v2(float x)
 
 	float x2 = x1;
 
-	if (x1 > 1.5f * pi)
+	if (x2 > 1.5f * pi)
 	{
-		x2 = x1 - twoPi;
+		x2 = x2 - twoPi;
 	}
-	else if (x1 < -1.5f * pi)
+	else if (x2 < -1.5f * pi)
 	{
-		x2 += x1 - twoPi;
+		x2 = x2 + twoPi;
 	}
 
 	float x3 = x2;
 
-	if (x2 > 0.5f * pi)
+	if (x3 > 0.5f * pi)
 	{
-		x3 = pi - x2;
+		x3 = pi - x3;
 	}
-	else if (x2 < -0.5f * pi)
+	else if (x3 < -0.5f * pi)
 	{
-		x3 = -pi - x2;
+		x3 = -pi - x3;
 	}
+
 
 #ifdef _DEBUG
 	printf(__func__);
@@ -137,6 +198,29 @@ float sin_poly3(float x)
 	return sin_poly3_principal(fold_sin_input(x));
 }
 
+float sin_poly5(float x)
+{
+	return sin_poly5_principal(fold_sin_input(x));
+}
+
+float sin_poly3_v2(float x)
+{
+	float sign;
+	
+	float folded = fold_sin_input_v2(x, &sign);
+
+	return sign*sin_poly3_principal(folded);
+}
+
+float sin_poly5_v2(float x)
+{
+	float sign;
+
+	float folded = fold_sin_input_v2(x, &sign);
+
+	return sign * sin_poly5_principal(folded);
+}
+
 float sin_poly3_principal(float x)
 {
 	const float a = -0.14506f;
@@ -148,11 +232,6 @@ float sin_poly3_principal(float x)
 	float xp3 = x * xp2;
 
 	return a * xp3 + b * xp2 + c * x + d;
-}
-
-float sin_poly5(float x)
-{
-	return sin_poly5_principal(fold_sin_input(x));
 }
 
 float sin_poly5_principal(float x)
