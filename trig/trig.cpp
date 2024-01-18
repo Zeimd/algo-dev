@@ -231,6 +231,24 @@ float sin_poly5_v2(float x)
 	return sign * sin_poly5_principal(folded);
 }
 
+float sin_poly3_v2_inline(float x)
+{
+	float sign;
+
+	float folded = fold_sin_input_v2_inline(x, &sign);
+
+	return sign * sin_poly3_principal(folded);
+}
+
+float sin_poly5_v2_inline(float x)
+{
+	float sign;
+
+	float folded = fold_sin_input_v2_inline(x, &sign);
+
+	return sign * sin_poly5_principal(folded);
+}
+
 float sin_poly3_v3(float x)
 {
 	return sin_poly3_principal(fold_sin_input_v3(x));

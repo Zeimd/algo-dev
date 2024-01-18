@@ -47,6 +47,12 @@ float sin_poly3_v1_inline(float x);
 float sin_poly5_v1_inline(float x);
 
 // Valid for any range
+float sin_poly3_v2_inline(float x);
+
+// Valid for any range
+float sin_poly5_v2_inline(float x);
+
+// Valid for any range
 float sin_poly3_v3_inline(float x);
 
 // Valid for any range
@@ -100,6 +106,44 @@ __forceinline float fold_sin_input_v1_inline(float x)
 
 	return x3;
 }
+
+__forceinline float fold_sin_input_v2_inline(float x, float* out_sign)
+{
+	float input = x;
+
+	float sign = 1.0f;
+
+	if (x < 0)
+	{
+		sign = -1.0f;
+		x = -x;
+	}
+
+	float div = x * invTwoPi;
+
+	float frac = div - floor(div);
+
+	float x1 = frac * twoPi;
+
+	float x2 = x1;
+
+	if (x1 > 1.5f * pi)
+	{
+		x2 = x1 - twoPi;
+	}
+
+	float x3 = x2;
+
+	if (x2 > 0.5f * pi)
+	{
+		x3 = pi - x2;
+	}
+
+	* out_sign = sign;
+
+	return x3;
+}
+
 
 constexpr uint32_t floatSignMask = uint32_t(1) << 31;
 

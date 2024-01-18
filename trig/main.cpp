@@ -152,12 +152,14 @@ void SpeedTests()
 	SpeedTest("sine poly 3 v2", &sin_poly3_v2, start, step, end, refDuration);
 	SpeedTest("sine poly 3 v3", &sin_poly3_v3, start, step, end, refDuration);
 	SpeedTest("sine poly 3 v1 inline", &sin_poly3_v1_inline, start, step, end, refDuration);
+	SpeedTest("sine poly 3 v2 inline", &sin_poly3_v2_inline, start, step, end, refDuration);
 	SpeedTest("sine poly 3 v3 inline", &sin_poly3_v3_inline, start, step, end, refDuration);
 	
 	SpeedTest("sine poly 5", &sin_poly5, start, step, end, refDuration);
 	SpeedTest("sine poly 5 v2", &sin_poly5_v2, start, step, end, refDuration);
 	SpeedTest("sine poly 5 v3", &sin_poly5_v3, start, step, end, refDuration);
 	SpeedTest("sine poly 5 v1 inline", &sin_poly5_v1_inline, start, step, end, refDuration);
+	SpeedTest("sine poly 5 v2 inline", &sin_poly5_v2_inline, start, step, end, refDuration);
 	SpeedTest("sine poly 5 v3 inline", &sin_poly5_v3_inline, start, step, end, refDuration);
 }
 
