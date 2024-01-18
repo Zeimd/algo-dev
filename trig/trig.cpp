@@ -6,11 +6,6 @@
 float fold_sin_input(float x)
 {
 	float input = x;
-#ifdef _DEBUG
-	printf(__func__);
-	printf("\n");
-	printf("input = %lf (%lf)\n", x, x*radToDeg);
-#endif
 
 	float sign = 1.0f;
 
@@ -20,55 +15,122 @@ float fold_sin_input(float x)
 		x = -x;
 	}
 
+	float div = x * invTwoPi;
+
+	float frac = div - floor(div);
+
+	float x1 = sign * frac * twoPi;
+
+	float x2;
+
+	if (x1 > 1.5f*pi)
+	{
+		x2 = x1 - twoPi;
+	}
+	else if (x1 < -1.5f*pi)
+	{
+		x2 += x1 - twoPi;
+	}
+
+	float x3;
+
+	if (x2 > 0.5f * pi)
+	{
+		x3 = pi - x2;
+	}
+	else if (x2 < -0.5f * pi)
+	{
+		x3 = -pi - x2;
+	}
+
 #ifdef _DEBUG
+	printf(__func__);
+	printf("\n");
+	printf("input = %lf (%lf)\n", x, x * radToDeg);
+
 	printf("wrap by 2pi:\n");
+
+	printf("x1 = %lf (%lf)\n", x1, x1 * radToDeg);
+	printf("sin(x1) = %lf, expected = %lf\n", sin(x1), sin(input));
+
+	printf("wrap if abs(x) > 3pi/2:\n");
+
+	printf("x2 = %lf (%lf)\n", x2, x2 * radToDeg);
+	printf("sin(x2) = %lf, expected = %lf\n", sin(x2), sin(input));
+
+	printf("wrap if abs(x) > pi/2:\n");
+
+	printf("x3 = %lf (%lf)\n", x3, x3 * radToDeg);
+	printf("sin(x3) = %lf, expected = %lf\n", sin(x3), sin(input));
 #endif
+	
+	return x3;
+}
+
+float fold_sin_input_v2(float x)
+{
+	float input = x;
+
+	float sign = 1.0f;
+
+	if (x < 0)
+	{
+		sign = -1.0f;
+		x = -x;
+	}
 
 	float div = x * invTwoPi;
 
 	float frac = div - floor(div);
 
-	x = sign * frac * twoPi;
+	float x1 = sign * frac * twoPi;
+
+	float x2 = x1;
+
+	if (x1 > 1.5f * pi)
+	{
+		x2 = x1 - twoPi;
+	}
+	else if (x1 < -1.5f * pi)
+	{
+		x2 += x1 - twoPi;
+	}
+
+	float x3 = x2;
+
+	if (x2 > 0.5f * pi)
+	{
+		x3 = pi - x2;
+	}
+	else if (x2 < -0.5f * pi)
+	{
+		x3 = -pi - x2;
+	}
 
 #ifdef _DEBUG
-	printf("x = %lf (%lf)\n", x, x*radToDeg);
-	printf("sin(x) = %lf, expected = %lf\n", sin(x), sin(input));
+	printf(__func__);
+	printf("\n");
+	printf("input = %lf (%lf)\n", x, x * radToDeg);
+
+	printf("wrap by 2pi:\n");
+
+	printf("x1 = %lf (%lf)\n", x1, x1 * radToDeg);
+	printf("sin(x1) = %lf, expected = %lf\n", sin(x1), sin(input));
 
 	printf("wrap if abs(x) > 3pi/2:\n");
-#endif
 
-	if (x > 1.5f*pi)
-	{
-		x -= twoPi;
-	}
-	else if (x < -1.5f*pi)
-	{
-		x += twoPi;
-	}
+	printf("x2 = %lf (%lf)\n", x2, x2 * radToDeg);
+	printf("sin(x2) = %lf, expected = %lf\n", sin(x2), sin(input));
 
-#ifdef _DEBUG
-	printf("x = %lf (%lf)\n", x, x * radToDeg);
-	printf("sin(x) = %lf, expected = %lf\n", sin(x), sin(input));
-	
 	printf("wrap if abs(x) > pi/2:\n");
+
+	printf("x3 = %lf (%lf)\n", x3, x3 * radToDeg);
+	printf("sin(x3) = %lf, expected = %lf\n", sin(x3), sin(input));
 #endif
 
-	if (x > 0.5f * pi)
-	{
-		x = pi - x;
-	}
-	else if (x < -0.5f * pi)
-	{
-		x = -pi - x;
-	}
-
-#ifdef _DEBUG
-	printf("x = %lf (%lf)\n", x, x * radToDeg);
-	printf("sin(x) = %lf, expected = %lf\n", sin(x), sin(input));
-#endif
-	
-	return x;
+	return x3;
 }
+
 
 float sin_poly3(float x)
 {

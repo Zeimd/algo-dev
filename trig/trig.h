@@ -14,6 +14,9 @@ typedef float(*SimpleTrigCall)(float x);
 // Fold input to range [-pi/2,pi/2]
 float fold_sin_input(float x);
 
+// Fold input to range [-pi/2,pi/2]
+float fold_sin_input_v2(float x);
+
 // Valid for any range
 float sin_poly3(float x);
 
