@@ -296,7 +296,7 @@ float sin_poly5_principal(float x)
 {
 	const float a = 0.0075741f;
 	const float b = 1.9619e-07f;
-	const float c = 0.16583f;
+	const float c = -0.16583f;
 	const float d = -3.228e-07;
 	const float e = 0.99977;
 	const float f = 5.6906e-08;
