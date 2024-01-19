@@ -21,4 +21,6 @@ struct FloatInfo
 
 FloatInfo GetFloatInfo(float x);
 
+float MakeFloat(uint32_t sign, int32_t exponent, uint32_t mantissa);
+
 void FloatPrintBinary(const char* text, float x);

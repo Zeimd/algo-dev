@@ -30,3 +30,13 @@ void FloatPrintBinary(const char* text, float x)
 	}
 	printf("\n");
 }
+
+float MakeFloat(uint32_t sign, int32_t exponent, uint32_t mantissa)
+{
+	uint32_t hack = sign << 31;
+
+	hack |= (exponent + 127) << 23;
+	hack |= mantissa;
+
+	return *(float*)&hack;
+}
