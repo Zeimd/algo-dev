@@ -2,16 +2,31 @@
 #include <stdio.h>
 #include "exp_log.h"
 
-
+float exp_poly3(float x)
+{
+	return pow2_poly3(x * log2e);
+}
 
 float pow2_poly3(float x)
 {
 	FloatInfo info = GetFloatInfo(x);
 
-	float y = 1.0f + float(info.mantissa) * pow2_n24;
+	float intPart = floor(x);
+	float frac = x - intPart;
 
-	float base = pow2_principal_poly3(y);
-	return 0.0f;
+	float base = MakeFloat(0, intPart, 0);
+	
+	float princ = pow2_principal_poly3(frac);
+
+#ifdef _DEBUG
+
+	printf("pow2_poly3\n");
+	printf("intPart = %lf, frac = %lf\n", intPart, frac);
+	printf("base = %lf, princ = %lf\n", base, princ);
+
+#endif
+
+	return base * princ;
 }
 
 float pow2_principal_poly1(float x)

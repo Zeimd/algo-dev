@@ -26,20 +26,32 @@ int FoldTest_v2(const char* name, SimpleTrigCall func, TwoParamFoldCall folding,
 
 int main()
 {
+	float testVal, correct;
+
+	float x = -0.22;
+
+	correct = pow(2.0, x);
+	testVal = pow2_poly3(x);	
+
+	printf("input = %lf\n", x);
+	printf("testVal = %lf, expected = %lf\n", testVal, correct);
+
 	//float x = -269.514191f * degToRad;
 	//float x = -359.470612f * degToRad;
-	float x = 0.004101f;
+	x = 0.004101f;
 	//float x = 1.004101f;
 	//float x = 1.0f / 256.0f;
 
-	float correct = log2(x);
-	float testVal = log2_poly3(x);
+	/*
+	correct = log2(x);
+	testVal = log2_poly3(x);
 	
 	float absErr = fabsf(testVal - correct);
 
 	printf("input = %lf\n", x);
 	printf("poly(x) = %lf, expected = %lf\n", testVal, correct);
 	printf("absErr = %lf\n", absErr);
+	*/
 
 	/*
 	float sign;
@@ -67,7 +79,7 @@ int main()
 	//FoldTest_v2("sin_folding_v2", &std::sinf, &fold_sin_input_v2, start, step, end);
 
 	//LogSpeedTests();
-	//LogAccuracyTests();
+	LogAccuracyTests();
 	//TrigSpeedTests();
 	//AccuracyTests();
 
@@ -229,6 +241,16 @@ void TrigAccuracyTests()
 	Ceng::AlignedFree(inputData);
 }
 
+float pow2_wrapper(float x)
+{
+	return powf(2.0f, x);
+}
+
+float exp_wrapper(float x)
+{
+	return expf(x);
+}
+
 void LogAccuracyTests()
 {
 	int groups = 10000000;
@@ -246,6 +268,15 @@ void LogAccuracyTests()
 	float targetAccuracy = 0.005f;
 
 	AccuracyTest("log2_poly3", &std::log2f, &log2_poly3, inputData, inputSize, targetAccuracy);
+
+	for (int k = 0; k < inputSize; k++)
+	{
+		inputData[k] = rand() * 0.0001f;
+	}
+
+	AccuracyTest("pow2_poly3", &pow2_wrapper, &pow2_poly3, inputData, inputSize, targetAccuracy);
+
+	AccuracyTest("exp_poly3", &exp_wrapper, &exp_poly3, inputData, inputSize, targetAccuracy);
 
 	Ceng::AlignedFree(inputData);
 }
