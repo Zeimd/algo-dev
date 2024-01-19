@@ -46,37 +46,18 @@ float log2_poly3(float x)
 	FloatInfo info = GetFloatInfo(x);
 
 	float mantissaF = float(info.mantissa);
-	float y = mantissaF * pow2_n24;
-
-	/*
-	if (info.exponent < 0)
-	{
-		y = 1.0f - y;
-	}
-	*/
-	
-	
+	float y = mantissaF * pow2_n23;
 
 	float base = log2_principal_poly3(y);
 	float expF = float(info.exponent);
 
 	float result = expF + base;
 	
-	/*
-	float result;
-	if (info.exponent >= 0)
-	{
-		result = expF + base;
-	}
-	else
-	{
-		result = expF - base;
-	}
-	*/
-	
-		
-
 #ifdef _DEBUG
+	float fullMantissa = 1.0f + y;
+
+	float backTrack = pow(2.0, float(info.exponent)) * fullMantissa;
+
 	printf("log2_poly3\n");
 
 	printf("input = %lf\n", x);
@@ -84,11 +65,13 @@ float log2_poly3(float x)
 	printf("sign = %i, exp = %i, mantissa = %i\n", info.sign, info.exponent, info.mantissa);
 	printf("mantissaF = %lf\n", mantissaF);
 	printf("y = %.15lf\n", y);
+	printf("fullMantissa = %.15lf\n", fullMantissa);
+	printf("backTrack = %.15lf\n", backTrack);
 	printf("expF = %lf\n", expF);
 	float correctBase = log2f(1.0f + y);
 	float baseAbsErr = fabsf(correctBase - base);
 
-	result = expF + correctBase;
+	//result = expF + correctBase;
 
 	printf("base = %lf, correct = %lf (absErr = %lf)\n", base, correctBase,baseAbsErr);
 	printf("result = %lf\n", result);
