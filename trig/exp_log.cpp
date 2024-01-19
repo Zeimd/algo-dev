@@ -4,10 +4,10 @@
 
 float exp_poly3(float x)
 {
-	return pow2_poly3(x * log2e);
+	return exp2_poly3(x * log2e);
 }
 
-float pow2_poly3(float x)
+float exp2_poly3(float x)
 {
 	FloatInfo info = GetFloatInfo(x);
 
@@ -16,7 +16,7 @@ float pow2_poly3(float x)
 
 	float base = MakeFloat(0, intPart, 0);
 	
-	float princ = pow2_principal_poly3(frac);
+	float princ = exp2_principal_poly3(frac);
 
 #ifdef _DEBUG
 
@@ -29,7 +29,7 @@ float pow2_poly3(float x)
 	return base * princ;
 }
 
-float pow2_principal_poly1(float x)
+float exp2_principal_poly1(float x)
 {
 	const float a = 0.72703f;
 	const float b = 1.082f;
@@ -37,7 +37,7 @@ float pow2_principal_poly1(float x)
 	return a * x + b;
 }
 
-float pow2_principal_poly2(float x)
+float exp2_principal_poly2(float x)
 {
 	const float a = 0.24858f;
 	const float b = 0.72703f;
@@ -46,7 +46,7 @@ float pow2_principal_poly2(float x)
 	return x * (a * x + b) + c;
 }
 
-float pow2_principal_poly3(float x)
+float exp2_principal_poly3(float x)
 {
 	const float a = 0.057002f;
 	const float b = 0.24858f;

@@ -31,7 +31,7 @@ int main()
 	float x = -0.22;
 
 	correct = pow(2.0, x);
-	testVal = pow2_poly3(x);	
+	testVal = exp2_poly3(x);	
 
 	printf("input = %lf\n", x);
 	printf("testVal = %lf, expected = %lf\n", testVal, correct);
@@ -274,7 +274,7 @@ void LogAccuracyTests()
 		inputData[k] = rand() * 0.0001f;
 	}
 
-	AccuracyTest("pow2_poly3", &pow2_wrapper, &pow2_poly3, inputData, inputSize, targetAccuracy);
+	AccuracyTest("pow2_poly3", &pow2_wrapper, &exp2_poly3, inputData, inputSize, targetAccuracy);
 
 	AccuracyTest("exp_poly3", &exp_wrapper, &exp_poly3, inputData, inputSize, targetAccuracy);
 

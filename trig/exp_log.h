@@ -8,16 +8,16 @@ constexpr float log2e = 1.44269504088896f;
 
 float exp_poly3(float x);
 
-float pow2_poly3(float x);
+float exp2_poly3(float x);
 
 // Calculate 2^x, where x is in range ]-1,1[
-float pow2_principal_poly1(float x);
+float exp2_principal_poly1(float x);
 
 // Calculate 2^x, where x is in range ]-1,1[
-float pow2_principal_poly2(float x);
+float exp2_principal_poly2(float x);
 
 // Calculate 2^x, where x is in range ]-1,1[
-float pow2_principal_poly3(float x);
+float exp2_principal_poly3(float x);
 
 float log2_poly3(float x);
 
