@@ -16,27 +16,27 @@ float pow2_poly3(float x)
 
 float pow2_principal_poly1(float x)
 {
-	const float a = 1.9842f;
-	const float b = 1.8933f;
+	const float a = 0.72703f;
+	const float b = 1.082f;
 
 	return a * x + b;
 }
 
 float pow2_principal_poly2(float x)
 {
-	const float a = 0.68531f;
-	const float b = 1.2989f;
-	const float c = 2.0075f;
+	const float a = 0.24858f;
+	const float b = 0.72703f;
+	const float c = 0.99916f;
 
 	return x * (a * x + b) + c;
 }
 
 float pow2_principal_poly3(float x)
 {
-	const float a = 0.15804;
-	const float b = 0.44825f;
-	const float c = 1.3937f;
-	const float d = 1.9996f;
+	const float a = 0.057002f;
+	const float b = 0.24858f;
+	const float c = 0.69282f;
+	const float d = 0.99916f;
 
 	return x * (x * (a * x + b) + c) + d;
 }
