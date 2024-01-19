@@ -2,9 +2,14 @@
 #include <stdio.h>
 #include "exp_log.h"
 
+float pow_poly3(float base, float x)
+{
+	return exp2_poly3(x * log2_poly3(base));
+}
+
 float exp_poly3(float x)
 {
-	return exp2_poly3(x * log2e);
+	return exp2_poly3(x * log2_of_e);
 }
 
 float exp2_poly3(float x)
@@ -55,6 +60,19 @@ float exp2_principal_poly3(float x)
 
 	return x * (x * (a * x + b) + c) + d;
 }
+
+// Natural logarithm
+float log_poly3(float x)
+{
+	return log2_poly3(x) / log2_of_e;
+}
+
+// Base 10 logarithm
+float log10_poly3(float x)
+{
+	return log2_poly3(x) / log2_of_10;
+}
+
 
 float log2_poly3(float x)
 {

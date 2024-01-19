@@ -18,6 +18,8 @@ void LogAccuracyTests();
 
 int AccuracyTest(const char* name, SimpleTrigCall reference, SimpleTrigCall callback, float* inputData, int inputSize, float targetAccuracy);
 
+int AccuracyTestTwoForm(const char* name, TwoParamCall reference, TwoParamCall callback, float* inputData, int inputSize, float targetAccuracy);
+
 double SpeedTest(const char* name, SimpleTrigCall callback, float* inputData, int inputSize, double refDuration);
 
 int FoldTest(const char* name, SimpleTrigCall func, SimpleTrigCall folding, float start, float step, float end);
@@ -241,16 +243,6 @@ void TrigAccuracyTests()
 	Ceng::AlignedFree(inputData);
 }
 
-float pow2_wrapper(float x)
-{
-	return powf(2.0f, x);
-}
-
-float exp_wrapper(float x)
-{
-	return expf(x);
-}
-
 void LogAccuracyTests()
 {
 	int groups = 10000000;
@@ -268,15 +260,17 @@ void LogAccuracyTests()
 	float targetAccuracy = 0.005f;
 
 	AccuracyTest("log2_poly3", &std::log2f, &log2_poly3, inputData, inputSize, targetAccuracy);
+	AccuracyTest("log_poly3", &std::logf, &log_poly3, inputData, inputSize, targetAccuracy);
+	AccuracyTest("log10_poly3", &std::log10, &log10_poly3, inputData, inputSize, targetAccuracy);
 
 	for (int k = 0; k < inputSize; k++)
 	{
 		inputData[k] = rand() * 0.0001f;
 	}
 
-	AccuracyTest("pow2_poly3", &pow2_wrapper, &exp2_poly3, inputData, inputSize, targetAccuracy);
+	AccuracyTest("pow2_poly3", &exp2f, &exp2_poly3, inputData, inputSize, targetAccuracy);
 
-	AccuracyTest("exp_poly3", &exp_wrapper, &exp_poly3, inputData, inputSize, targetAccuracy);
+	AccuracyTest("exp_poly3", &expf, &exp_poly3, inputData, inputSize, targetAccuracy);
 
 	Ceng::AlignedFree(inputData);
 }
@@ -337,6 +331,11 @@ int AccuracyTest(const char* name, SimpleTrigCall reference, SimpleTrigCall call
 		printf("Total errors: %i out of %i (%lf)\n", errCount,inputSize,errorPercent);
 	}
 	return errCount;
+}
+
+int AccuracyTestTwoForm(const char* name, TwoParamCall reference, TwoParamCall callback, float* inputData, int inputSize, float targetAccuracy)
+{
+	return 0;
 }
 
 void TrigSpeedTests()

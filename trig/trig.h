@@ -20,6 +20,7 @@ constexpr float degToRad = float(piD / 180.0);
 constexpr float radToDeg = float(180.0 / piD);
 
 typedef float(*SimpleTrigCall)(float x);
+typedef float(*TwoParamCall)(float x);
 typedef float(*TwoParamFoldCall)(float x,float* out_sign);
 
 // Fold input to range [-pi/2,pi/2]
