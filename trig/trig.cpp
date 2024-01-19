@@ -73,9 +73,13 @@ float fold_sin_input_sse_scalar(float x)
 {
 	float result;
 
+#ifdef _DEBUG
 	float x1, x2, x3;
 
 	float s0, s1, s2;
+
+	float d1, d2, d3,d4,d5,d6;
+#endif
 
 	__asm
 	{
@@ -158,7 +162,7 @@ float fold_sin_input_sse_scalar(float x)
 		// xmm2 = abs(x1)
 
 		movss xmm3, oneHalfPi;
-		cmpltps xmm3, xmm2;
+		cmpltss xmm3, xmm2;
 
 		// xmm3 = abs(x1) > 1.5pi 
 
@@ -247,6 +251,12 @@ float fold_sin_input_sse_scalar(float x)
 	printf("wrap if abs(x) > pi/2:\n");
 
 	printf("x3 = %lf (%lf)\n", x3, x3* radToDeg);
+	printf("d1 = %lf\n", d1);
+	printf("d2 = %lf\n", d2);
+	printf("d3 = %lf\n", d3);
+	printf("d4 = %lf\n", d4);
+	printf("d5 = %lf\n", d5);
+	printf("d6 = %lf\n", d6);
 	printf("sin(x3) = %lf, expected = %lf\n", sin(x3), sin(x));
 #endif
 	return result;

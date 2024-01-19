@@ -6,12 +6,15 @@
 #include <limits>
 
 #include "trig.h"
+#include "exp_log.h"
 
 #include <ceng/datatypes/aligned-buffer.h>
 
-void SpeedTests();
+void TrigSpeedTests();
+void TrigAccuracyTests();
 
-void AccuracyTests();
+void LogSpeedTests();
+void LogAccuracyTests();
 
 int AccuracyTest(const char* name, SimpleTrigCall reference, SimpleTrigCall callback, float* inputData, int inputSize, float targetAccuracy);
 
@@ -25,8 +28,20 @@ int main()
 {
 	//float x = -269.514191f * degToRad;
 	//float x = -359.470612f * degToRad;
-	float x = -719.427063f * degToRad;
+	float x = 0.004101f;
+	//float x = 1.004101f;
+	//float x = 1.0f / 256.0f;
 
+	float correct = log2(x);
+	float testVal = log2_poly3(x);
+	
+	float absErr = fabsf(testVal - correct);
+
+	printf("input = %lf\n", x);
+	printf("poly(x) = %lf, expected = %lf\n", testVal, correct);
+	printf("absErr = %lf\n", absErr);
+
+	/*
 	float sign;
 	float folded = fold_sin_input_sse_scalar(x);
 
@@ -39,6 +54,7 @@ int main()
 		printf("folded = %lf (%lf)\n", folded, folded * radToDeg);
 		printf("func(folded) = %lf, expected = %lf\n", testVal, correct);
 	//}
+	*/
 
 	float start = -4.0*pi;
 	float end = 4.0*pi;
@@ -50,7 +66,9 @@ int main()
 	//FoldTest("sin_folding_sse_scalar", &std::sinf, &fold_sin_input_sse_scalar, start, step, end);
 	//FoldTest_v2("sin_folding_v2", &std::sinf, &fold_sin_input_v2, start, step, end);
 
-	//SpeedTests();
+	//LogSpeedTests();
+	//LogAccuracyTests();
+	//TrigSpeedTests();
 	//AccuracyTests();
 
 	return 0;
@@ -168,7 +186,7 @@ int FoldTest(const char* name, SimpleTrigCall func, SimpleTrigCall folding, floa
 	return errCount;
 }
 
-void AccuracyTests()
+void TrigAccuracyTests()
 {
 	int groups = 10000000;
 	int inputSize = 4 * groups;
@@ -188,6 +206,7 @@ void AccuracyTests()
 	//AccuracyTest("sine poly 5 principal", &std::sinf, &sin_poly5_principal, inputData, inputSize, targetAccuracy);
 
 	AccuracyTest("sine poly 3", &std::sinf, &sin_poly3, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 3 horner", &std::sinf, &sin_poly3_horner, inputData, inputSize, targetAccuracy);
 	/*
 	AccuracyTest("sine poly 3 v2", &std::sinf, &sin_poly3_v2, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 3 v3", &std::sinf, &sin_poly3_v3, inputData, inputSize, targetAccuracy);
@@ -197,6 +216,7 @@ void AccuracyTests()
 	*/
 
 	AccuracyTest("sine poly 5", &std::sinf, &sin_poly5, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 5 horner", &std::sinf, &sin_poly5_horner, inputData, inputSize, targetAccuracy);
 
 	/*
 	AccuracyTest("sine poly 5 v2", &std::sinf, &sin_poly5_v2, inputData, inputSize, targetAccuracy);
@@ -205,6 +225,27 @@ void AccuracyTests()
 	AccuracyTest("sine poly 5 v2 inline", &std::sinf, &sin_poly5_v2_inline, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 5 v3 inline", &std::sinf, &sin_poly5_v3_inline, inputData, inputSize, targetAccuracy);
 	*/
+
+	Ceng::AlignedFree(inputData);
+}
+
+void LogAccuracyTests()
+{
+	int groups = 10000000;
+	int inputSize = 4 * groups;
+
+	float* inputData = (float*)Ceng::AlignedMalloc(inputSize * sizeof(float), 16);
+
+	for (int k = 0; k < inputSize; k++)
+	{
+		inputData[k] = abs(rand()) * 0.0001f + 0.000001f;
+	}
+
+	printf("steps = %i\n", inputSize);
+
+	float targetAccuracy = 0.005f;
+
+	AccuracyTest("log2_poly3", &std::log2f, &log2_poly3, inputData, inputSize, targetAccuracy);
 
 	Ceng::AlignedFree(inputData);
 }
@@ -267,8 +308,11 @@ int AccuracyTest(const char* name, SimpleTrigCall reference, SimpleTrigCall call
 	return errCount;
 }
 
-void SpeedTests()
+void TrigSpeedTests()
 {
+	printf("******************************************************************\n");
+	printf("TrigSpeedTests START\n");
+
 	int groups = 10000000;
 	int inputSize = 4 * groups;
 
@@ -288,10 +332,16 @@ void SpeedTests()
 	SpeedTest("fold_sin_input_sse_scalar", &fold_sin_input_sse_scalar, inputData, inputSize, refDuration);
 
 	SpeedTest("sine poly 3 principal", &sin_poly3_principal, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 principal horner", &sin_poly3_principal_horner, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 principal horner sse scalar", &sin_poly3_principal_horner_sse_scalar, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 principal", &sin_poly5_principal, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 principal horner", &sin_poly5_principal_horner, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 principal horner sse scalar", &sin_poly5_principal_horner_sse_scalar, inputData, inputSize, refDuration);
 
 	SpeedTest("sine poly 3", &sin_poly3, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 horner", &sin_poly3_horner, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 sse_scalar", &sin_poly3_sse_scalar, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 sse_scalar inline fold", &sin_poly3_sse_scalar_inline_fold, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 v2", &sin_poly3_v2, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 v3", &sin_poly3_v3, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 v1 inline", &sin_poly3_v1_inline, inputData, inputSize, refDuration);
@@ -299,7 +349,9 @@ void SpeedTests()
 	SpeedTest("sine poly 3 v3 inline", &sin_poly3_v3_inline, inputData, inputSize, refDuration);
 	
 	SpeedTest("sine poly 5", &sin_poly5, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 horner", &sin_poly5_horner, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 sse_scalar", &sin_poly5_sse_scalar, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 sse_scalar inline fold", &sin_poly5_sse_scalar_inline_fold, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 v2", &sin_poly5_v2, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 v3", &sin_poly5_v3, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 v1 inline", &sin_poly5_v1_inline, inputData, inputSize, refDuration);
@@ -308,6 +360,29 @@ void SpeedTests()
 
 	Ceng::AlignedFree(inputData);
 }
+
+void LogSpeedTests()
+{
+	printf("******************************************************************\n");
+	printf("LogSpeedTests START\n");
+
+	int groups = 10000000;
+	int inputSize = 4 * groups;
+
+	float* inputData = (float*)Ceng::AlignedMalloc(inputSize * sizeof(float), 16);
+
+	for (int k = 0; k < inputSize; k++)
+	{
+		inputData[k] = abs(rand()) * 0.0001f + 0.000001f;
+	}
+
+	double refDuration = SpeedTest("library log2", &std::log2f, inputData, inputSize, 1.0f);
+
+	SpeedTest("log2_poly3", &log2_poly3, inputData, inputSize, refDuration);
+
+	Ceng::AlignedFree(inputData);
+}
+
 
 double SpeedTest(const char* name, SimpleTrigCall callback, float* inputData, int inputSize, double refDuration)
 {

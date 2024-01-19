@@ -1,8 +1,9 @@
+#pragma once
 
 #include <stdint.h>
+#include <math.h>
 
-const uint32_t floatSignMask = uint32_t(1) << 31;
-const uint32_t floatAbsMask = ~floatSignMask;
+#include "float_bitmanip.h"
 
 constexpr double piD = 3.14159265358979323846;
 constexpr float pi = 3.14159265358979323846f;
@@ -244,6 +245,13 @@ __forceinline float fold_sin_input_v3_inline(float x)
 __forceinline float fold_sin_input_sse_scalar_inline(float x)
 {
 	float result;
+
+#ifdef _DEBUG
+
+	float x1, x2, x3;
+	float s0, s1, s2;
+#endif
+
 
 	__asm
 	{
