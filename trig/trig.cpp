@@ -416,24 +416,24 @@ float sin_poly5_horner(float x)
 	return sin_poly5_principal_horner(fold_sin_input(x));
 }
 
-float sin_poly3_sse_scalar(float x)
+float sin_poly3_horner_sse_scalar(float x)
 {
 	return sin_poly3_principal_horner_sse_scalar(fold_sin_input_sse_scalar(x));
 }
 
-float sin_poly5_sse_scalar(float x)
+float sin_poly5_horner_sse_scalar(float x)
 {
 	return sin_poly5_principal_horner_sse_scalar(fold_sin_input_sse_scalar(x));
 }
 
 float sin_poly3_sse_scalar_inline_fold(float x)
 {
-	return sin_poly3_principal_horner_sse_scalar(fold_sin_input_sse_scalar_inline(x));
+	return sin_poly3_principal_sse_scalar(fold_sin_input_sse_scalar_inline(x));
 }
 
 float sin_poly5_sse_scalar_inline_fold(float x)
 {
-	return sin_poly5_principal_horner_sse_scalar(fold_sin_input_sse_scalar_inline(x));
+	return sin_poly5_principal_sse_scalar(fold_sin_input_sse_scalar_inline(x));
 }
 
 
@@ -525,6 +525,89 @@ float sin_poly5_principal_horner(float x)
 
 	return x * (x * (x * (x * (a * x + b) + c) + d) + e) + f;
 }
+
+const float sin_poly3_principal_a = -0.14506f;
+const float sin_poly3_principal_b = -5.1833e-06f;
+const float sin_poly3_principal_c = 0.98879f;
+const float sin_poly3_principal_d = 2.5585e-06;
+
+float sin_poly3_principal_sse_scalar(float x)
+{
+	float result;
+
+	__asm
+	{
+		movss xmm0, x;
+		movss xmm1, sin_poly3_principal_a;
+		movss xmm2, sin_poly3_principal_b;
+		movss xmm3, sin_poly3_principal_c;
+		movss xmm4, xmm0;
+
+		mulss xmm1, xmm0; // xmm1 = a*x
+		mulss xmm4, xmm4; // xmm4 = x^2
+		mulss xmm3, xmm0; // xmm3 = c*x
+
+		mulss xmm1, xmm4; // xmm1 = a*x^3
+		mulss xmm2, xmm4; // xmm2 = b*x^2
+		addss xmm3, sin_poly3_principal_d; // xmm3 = c*x + d
+
+		addss xmm1, xmm2; // xmm1 = a*x^3 + b*x^2
+		addss xmm3, xmm1; // xmm3 = a*x^3 + b*x^2 + c*x + d
+		movss result, xmm3;		
+	}
+
+	return result;
+}
+
+const float sin_poly5_principal_a = 0.0075741f;
+const float sin_poly5_principal_b = 1.9619e-07f;
+const float sin_poly5_principal_c = -0.16583f;
+const float sin_poly5_principal_d = -3.228e-07;
+const float sin_poly5_principal_e = 0.99977;
+const float sin_poly5_principal_f = 5.6906e-08;
+
+float sin_poly5_principal_sse_scalar(float x)
+{
+	float result;
+
+	// K1=x*x K2=c*x K3=e*x K4=a*x
+	// K5=K1*K1:x^4 K6=d*K1:d*x^2 K7=K2*K1:c*x^3 K10=K3+f:e*x+f
+	// K8=K4*K5:a*x^5 K9=b*K5:b*x^4 K11=K6+K7:d*x^2+c*x^3
+	// K12=K8+K9:a*x^5+b*x^4
+	// ans = K12+K10+K11:a*x^5+b*x^4+d*x^2+c*x^3+e*x+f
+
+	__asm
+	{
+		movss xmm0, x;
+		movss xmm1, sin_poly5_principal_a;
+		movss xmm2, sin_poly5_principal_b;
+		movss xmm3, sin_poly5_principal_c;
+		movss xmm4, sin_poly5_principal_d;
+		movss xmm5, sin_poly5_principal_e;
+
+		mulss xmm1, xmm0; // K4
+		mulss xmm3, xmm0; // K2
+		mulss xmm5, xmm0; // <K3>
+		mulss xmm0, xmm0; // K1
+
+		mulss xmm4, xmm0; // <K6>
+		mulss xmm3, xmm0; // <K7>
+		mulss xmm0, xmm0; // K5
+		addss xmm5, sin_poly5_principal_f; // <K10>
+
+		mulss xmm2, xmm0; // <K9>
+		mulss xmm1, xmm0; // <K8>
+		addss xmm4, xmm3; // <K11>
+		addss xmm1, xmm2; // <K12>
+
+		addss xmm4, xmm5; // K10+K11
+		addss xmm1, xmm4; // answer
+		movss result, xmm1;		
+	}
+
+	return result;
+}
+
 
 float sin_poly3_principal_horner_sse_scalar(float x)
 {

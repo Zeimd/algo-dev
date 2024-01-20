@@ -81,9 +81,9 @@ int main()
 	//FoldTest_v2("sin_folding_v2", &std::sinf, &fold_sin_input_v2, start, step, end);
 
 	//LogSpeedTests();
-	LogAccuracyTests();
-	//TrigSpeedTests();
-	//AccuracyTests();
+	//LogAccuracyTests();
+	TrigSpeedTests();
+	//TrigAccuracyTests();
 
 	return 0;
 }
@@ -221,6 +221,7 @@ void TrigAccuracyTests()
 
 	AccuracyTest("sine poly 3", &std::sinf, &sin_poly3, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 3 horner", &std::sinf, &sin_poly3_horner, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 3 sse_scalar inline fold", &std::sinf, &sin_poly3_sse_scalar_inline_fold, inputData, inputSize, targetAccuracy);
 	/*
 	AccuracyTest("sine poly 3 v2", &std::sinf, &sin_poly3_v2, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 3 v3", &std::sinf, &sin_poly3_v3, inputData, inputSize, targetAccuracy);
@@ -231,6 +232,7 @@ void TrigAccuracyTests()
 
 	AccuracyTest("sine poly 5", &std::sinf, &sin_poly5, inputData, inputSize, targetAccuracy);
 	AccuracyTest("sine poly 5 horner", &std::sinf, &sin_poly5_horner, inputData, inputSize, targetAccuracy);
+	AccuracyTest("sine poly 5 sse_scalar inline fold", &std::sinf, &sin_poly5_sse_scalar_inline_fold, inputData, inputSize, targetAccuracy);
 
 	/*
 	AccuracyTest("sine poly 5 v2", &std::sinf, &sin_poly5_v2, inputData, inputSize, targetAccuracy);
@@ -364,13 +366,16 @@ void TrigSpeedTests()
 	SpeedTest("sine poly 3 principal", &sin_poly3_principal, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 principal horner", &sin_poly3_principal_horner, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 principal horner sse scalar", &sin_poly3_principal_horner_sse_scalar, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 principal sse scalar", &sin_poly3_principal_sse_scalar, inputData, inputSize, refDuration);
+
 	SpeedTest("sine poly 5 principal", &sin_poly5_principal, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 principal horner", &sin_poly5_principal_horner, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 principal horner sse scalar", &sin_poly5_principal_horner_sse_scalar, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 principal sse scalar", &sin_poly5_principal_sse_scalar, inputData, inputSize, refDuration);
 
 	SpeedTest("sine poly 3", &sin_poly3, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 horner", &sin_poly3_horner, inputData, inputSize, refDuration);
-	SpeedTest("sine poly 3 sse_scalar", &sin_poly3_sse_scalar, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 3 horner sse_scalar", &sin_poly3_horner_sse_scalar, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 sse_scalar inline fold", &sin_poly3_sse_scalar_inline_fold, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 v2", &sin_poly3_v2, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 3 v3", &sin_poly3_v3, inputData, inputSize, refDuration);
@@ -380,7 +385,7 @@ void TrigSpeedTests()
 	
 	SpeedTest("sine poly 5", &sin_poly5, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 horner", &sin_poly5_horner, inputData, inputSize, refDuration);
-	SpeedTest("sine poly 5 sse_scalar", &sin_poly5_sse_scalar, inputData, inputSize, refDuration);
+	SpeedTest("sine poly 5 horner sse_scalar", &sin_poly5_horner_sse_scalar, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 sse_scalar inline fold", &sin_poly5_sse_scalar_inline_fold, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 v2", &sin_poly5_v2, inputData, inputSize, refDuration);
 	SpeedTest("sine poly 5 v3", &sin_poly5_v3, inputData, inputSize, refDuration);

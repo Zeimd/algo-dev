@@ -48,10 +48,10 @@ float sin_poly3_horner(float x);
 float sin_poly5_horner(float x);
 
 // Valid for any range
-float sin_poly3_sse_scalar(float x);
+float sin_poly3_horner_sse_scalar(float x);
 
 // Valid for any range
-float sin_poly5_sse_scalar(float x);
+float sin_poly5_horner_sse_scalar(float x);
 
 // Valid for any range
 float sin_poly3_sse_scalar_inline_fold(float x);
@@ -98,17 +98,31 @@ float sin_poly3_principal(float x);
 // Uses least squares error polynomial fit from Octave
 float sin_poly5_principal(float x);
 
-// Valid for any range
+// Only valid for range [-pi/2,pi/2]
+// Uses least squares error polynomial fit from Octave
 float sin_poly3_principal_horner(float x);
 
-// Valid for any range
+// Only valid for range [-pi/2,pi/2]
+// Uses least squares error polynomial fit from Octave
 float sin_poly5_principal_horner(float x);
 
-// Valid for any range
+// Only valid for range [-pi/2,pi/2]
+// Uses least squares error polynomial fit from Octave
 float sin_poly3_principal_horner_sse_scalar(float x);
 
-// Valid for any range
+// Only valid for range [-pi/2,pi/2]
+// Uses least squares error polynomial fit from Octave
 float sin_poly5_principal_horner_sse_scalar(float x);
+
+// Only valid for range [-pi/2,pi/2]
+// Uses least squares error polynomial fit from Octave
+// Uses order of operations that improves out-of-order execution potential
+float sin_poly3_principal_sse_scalar(float x);
+
+// Only valid for range [-pi/2,pi/2]
+// Uses least squares error polynomial fit from Octave
+// Uses order of operations that improves out-of-order execution potential
+float sin_poly5_principal_sse_scalar(float x);
 
 
 __forceinline float fold_sin_input_v1_inline(float x)
