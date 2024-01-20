@@ -611,27 +611,22 @@ float sin_poly5_principal_sse_scalar(float x)
 
 float sin_poly3_principal_horner_sse_scalar(float x)
 {
-	const float a = -0.14506f;
-	const float b = -5.1833e-06f;
-	const float c = 0.98879f;
-	const float d = 2.5585e-06;
-
 	float result;
 
 	__asm
 	{
 		movss xmm0, x;
 
-		movss xmm1, a;
+		movss xmm1, sin_poly3_principal_a;
 
 		mulss xmm1, xmm0;
-		addss xmm1, b;
+		addss xmm1, sin_poly3_principal_b;
 
 		mulss xmm1, xmm0;
-		addss xmm1, c;
+		addss xmm1, sin_poly3_principal_c;
 
 		mulss xmm1, xmm0;
-		addss xmm1, d;
+		addss xmm1, sin_poly3_principal_d;
 
 		movss result, xmm1;
 		
@@ -644,35 +639,28 @@ float sin_poly3_principal_horner_sse_scalar(float x)
 
 float sin_poly5_principal_horner_sse_scalar(float x)
 {
-	const float a = 0.0075741f;
-	const float b = 1.9619e-07f;
-	const float c = -0.16583f;
-	const float d = -3.228e-07;
-	const float e = 0.99977;
-	const float f = 5.6906e-08;
-
 	float result;
 
 	__asm
 	{
 		movss xmm0, x;
 
-		movss xmm1, a;
+		movss xmm1, sin_poly5_principal_a;
 
 		mulss xmm1, xmm0;
-		addss xmm1, b;
+		addss xmm1, sin_poly5_principal_b;
 
 		mulss xmm1, xmm0;
-		addss xmm1, c;
+		addss xmm1, sin_poly5_principal_c;
 
 		mulss xmm1, xmm0;
-		addss xmm1, d;
+		addss xmm1, sin_poly5_principal_d;
 
 		mulss xmm1, xmm0;
-		addss xmm1, e;
+		addss xmm1, sin_poly5_principal_e;
 
 		mulss xmm1, xmm0;
-		addss xmm1, f;
+		addss xmm1, sin_poly5_principal_f;
 
 		movss result, xmm1;
 
