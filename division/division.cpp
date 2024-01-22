@@ -375,8 +375,12 @@ uint32_t RestoringDivision(const uint32_t a, const uint32_t b, uint32_t *remaind
 //
 static const int32_t lookupTableRadix4[2][16] =
 {
+	{0, 0, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
+	{0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3}
+	/*
 	{0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7},
 	{0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5}
+	*/
 };
 
 // Restoring division that produces 2 bits of result
@@ -556,10 +560,30 @@ void InitRadix16Table()
 {
 	for (int d = 0; d < 8; d++)
 	{
+		/*
 		for (int n = 0; n < 256; n++)
 		{
 			lookupTableRadix16[d][n] = n / (8 + d);
 		}
+		*/
+		
+		
+		for (int n = 0; n < 256; n++)
+		{
+			int32_t value = n / (8 + d);
+
+			if (value > 15) value = 15;
+
+			lookupTableRadix16[d][n] = n;
+		}
+		/*
+		for (int n = 226; n < 256; n++)
+		{
+			lookupTableRadix16[d][n] = 15;
+		}
+		*/
+		
+
 	}
 }
 
