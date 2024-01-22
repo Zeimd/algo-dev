@@ -1,6 +1,8 @@
 ﻿// division.cpp : Defines the entry point for the application.
 //
 
+#include <vector>
+
 #include <intrin.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -54,8 +56,23 @@ void PrintBinary(const int64_t x)
 	PrintBinary((uint8_t*)&x, 8);
 }
 
-int DivisionTest(const char* name, DivisionCall callback, uint32_t range);
-double SpeedTest(const char* name, DivisionCall callback, uint32_t range, double refDuration);
+struct DivisionInput
+{
+	uint32_t numerator;
+	uint32_t divisor;
+};
+
+struct DivisionResult
+{
+	uint32_t result;
+	uint32_t remainder;
+};
+
+int DivisionTest(const char* name, DivisionCall callback, const std::vector<DivisionInput>& input);
+double SpeedTest(const char* name, DivisionCall callback, const std::vector<DivisionInput>& input, double refDuration);
+
+int DivisionTests(const std::vector<DivisionInput>& input);
+void SpeedTests(const std::vector<DivisionInput>& input);
 
 int main()
 {
@@ -134,45 +151,43 @@ int main()
 	printf("\n");
 	*/
 
-	uint32_t range = 20000;
+	uint32_t range = 1 << 25;// 20000;
 
-	/*
-	double start, end, refDuration;
+	std::vector<DivisionInput> input(range);
 
-	start = Ceng_HighPrecisionTimer();
+	printf("input size = %i\n", range);
+	printf("input vector size = %i\n", input.size());
 
-	for (int numerator = 0; numerator < range; numerator++)
+	for (uint32_t k = 0; k < range; k++)
 	{
-		for (int divisor = 1; divisor < range; divisor++)
+		do
 		{
-			uint32_t correctDiv, correctMod;
+			input[k].numerator = abs(rand());
+		} while (input[k].numerator == 0);
 
-			correctDiv = numerator / divisor;
-			correctMod = numerator % divisor;
-		}
+		do
+		{
+			input[k].divisor = abs(rand());
+		} while (input[k].divisor == 0);
 	}
 
-	end = Ceng_HighPrecisionTimer();
-
-	refDuration = end - start;
-	
-	printf("refDuration = %lf , ratio = %lf\n", refDuration, refDuration / refDuration);
-	*/
-
-	//DivisionTest("RestoringDivisionRadix4", RestoringDivisionRadix4, range);
-	//DivisionTest("RestoringDivisionRadix16", RestoringDivisionRadix16, range);
-
-	double refDuration = SpeedTest("RestoringDivision", RestoringDivision, range, 1.0);
-	SpeedTest("RestoringDivisionRadix4", RestoringDivisionRadix4, range, refDuration);
-	SpeedTest("RestoringDivisionRadix16", RestoringDivisionRadix16, range, refDuration);
-
-	//DivisionTest("RestoringDivision", RestoringDivision, range);
-	
+	SpeedTests(input);
+	//DivisionTests(input);
 
 	return 0;
 }
 
-int DivisionTest(const char* name, DivisionCall callback, uint32_t range)
+int DivisionTests(const std::vector<DivisionInput>& input)
+{
+	DivisionTest("RestoringDivision", RestoringDivision, input);
+	DivisionTest("RestoringDivisionRadix4", RestoringDivisionRadix4, input);
+	DivisionTest("RestoringDivisionRadix16", RestoringDivisionRadix16, input);
+
+	return 0;
+}
+
+
+int DivisionTest(const char* name, DivisionCall callback, const std::vector<DivisionInput>& input)
 {
 	printf("DivisionTest\n");
 
@@ -180,26 +195,22 @@ int DivisionTest(const char* name, DivisionCall callback, uint32_t range)
 
 	int errorCount = 0;
 
-	for (int numerator = 0; numerator < range; numerator++)
+	for (auto&x : input)
 	{
-		for (int divisor = 1; divisor < range; divisor++)
+		uint32_t correctDiv, correctMod;
+
+		correctDiv = x.numerator / x.divisor;
+		correctMod = x.numerator % x.divisor;
+
+		uint32_t testDiv, testMod;
+
+		testDiv = callback(x.numerator, x.divisor, &testMod);
+
+		if (correctDiv != testDiv || correctMod != testMod)
 		{
-			uint32_t correctDiv, correctMod;
-
-			correctDiv = numerator / divisor;
-			correctMod = numerator % divisor;
-
-			uint32_t testDiv, testMod;
-
-			testDiv = callback(numerator, divisor, &testMod);
-
-			if (correctDiv != testDiv || correctMod != testMod)
-			{
-				printf("ERROR: n = %u, d = %u\n", numerator, divisor);
-				printf("testDiv = %u, correct = %u\n", testDiv, correctDiv);
-				printf("testMod = %u, correct = %u\n", testMod, correctMod);
-			}
-
+			printf("ERROR: n = %u, d = %u\n", x.numerator, x.divisor);
+			printf("testDiv = %u, correct = %u\n", testDiv, correctDiv);
+			printf("testMod = %u, correct = %u\n", testMod, correctMod);
 		}
 	}
 
@@ -213,22 +224,38 @@ int DivisionTest(const char* name, DivisionCall callback, uint32_t range)
 	return errorCount;
 }
 
-double SpeedTest(const char* name, DivisionCall callback, uint32_t range, double refDuration)
+uint32_t NativeDivision(const uint32_t a, const uint32_t b, uint32_t* remainder)
 {
-	printf("SpeedTest\n");
+	*remainder = a % b;
+	return a / b;
+}
 
-	printf("TEST: %s START\n", name);
+void SpeedTests(const std::vector<DivisionInput>& input)
+{
+	printf("SpeedTests\n");
+
+	double refDuration = SpeedTest("Native division", NativeDivision, input, 1.0);
+
+	SpeedTest("RestoringDivision", RestoringDivision, input, refDuration);
+	SpeedTest("RestoringDivisionRadix4", RestoringDivisionRadix4, input, refDuration);
+	SpeedTest("RestoringDivisionRadix16", RestoringDivisionRadix16, input, refDuration);
+}
+
+double SpeedTest(const char* name, DivisionCall callback, const std::vector<DivisionInput>& input, double refDuration)
+{
+	printf("SpeedTest: %s START\n", name);
 
 	double start = Ceng_HighPrecisionTimer();
 
-	for (int numerator = 0; numerator < range; numerator++)
-	{
-		for (int divisor = 1; divisor < range; divisor++)
-		{
-			uint32_t testDiv, testMod;
+	uint64_t accumulator = 0;
 
-			testDiv = callback(numerator, divisor, &testMod);
-		}
+	for (auto& x : input)
+	{
+		uint32_t testDiv, testMod;
+
+		testDiv = callback(x.numerator, x.divisor, &testMod);
+
+		accumulator += uint64_t(testDiv) + testMod;
 	}
 
 	double end = Ceng_HighPrecisionTimer();
@@ -238,6 +265,7 @@ double SpeedTest(const char* name, DivisionCall callback, uint32_t range, double
 	double duration = end - start;
 
 	printf("Duration = %lf , ratio = %lf\n", duration, duration / refDuration);
+	printf("accumulator = %llu\n", accumulator);
 
 	return duration;
 }
