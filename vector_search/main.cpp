@@ -132,7 +132,11 @@ int main()
 
 	printf("RefDuration = %lf , ratio = %lf\n", refDuration, refDuration / refDuration);
 
-	int result = TestSkeleton("find_sse", test_input, test_size, correct_result, refDuration, find_sse);
+	int result;
+
+	result = TestSkeleton("find_group4", test_input, test_size, correct_result, refDuration, find_group4);
+
+	result = TestSkeleton("find_sse", test_input, test_size, correct_result, refDuration, find_sse);
 
 	free(correct_result);
 

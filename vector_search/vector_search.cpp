@@ -13,6 +13,36 @@ int find_reference(int* array, int length, int x)
 	return -1;
 }
 
+int find_group4(int* in_array, int in_length, int x)
+{
+	for (int k = 0; k < in_length; k+=4)
+	{
+		if (in_array[k] == x)
+		{
+			return k;
+		}
+
+		if (in_array[k+1] == x)
+		{
+			return k+1;
+		}
+
+		if (in_array[k + 2] == x)
+		{
+			return k + 2;
+		}
+
+		if (in_array[k + 3] == x)
+		{
+			return k + 3;
+		}
+
+
+	}
+
+	return -1;
+}
+
 int find_sse(int* in_array, int in_length, int x)
 {
 	int result = -1;
