@@ -46,28 +46,28 @@ uint16_t SingleToHalf(float x)
 			return 0;
 		}
 
-		printf("subnormal number\n");
+		//printf("subnormal number\n");
 
 		uint32_t biasedExponent = (*punning & singleExponentMask) >> 23;
 		int32_t trueExponent = int32_t(biasedExponent) - 127;
 
-		printf("trueExponent = %i\n", trueExponent);
+		//printf("trueExponent = %i\n", trueExponent);
 
 		uint32_t mantissa = ((*punning) >> 23) | singleImplicitOne;
 
-		printf("extracted mantissa with implicit one: ");
-		PrintBinary(mantissa);
-		printf("\n");
+		//printf("extracted mantissa with implicit one: ");
+		//PrintBinary(mantissa);
+		//printf("\n");
 
 		int32_t delta = abs(trueExponent+1);
 
-		printf("delta = %i\n", delta);
+		//printf("delta = %i\n", delta);
 
 		mantissa >>= delta;
 
-		printf("normalized mantissa: ");
-		PrintBinary(mantissa);
-		printf("\n");
+		//printf("normalized mantissa: ");
+		//PrintBinary(mantissa);
+		//printf("\n");
 
 		return sign | mantissa;
 	}
@@ -123,9 +123,20 @@ float HalfToSingle(uint16_t x)
 
 	uint32_t sign = (x & halfSignMask) << 16;
 
-	uint32_t mantissa = (x & halfMantissaMask) << 13;
+	uint32_t mantissa = x & halfMantissaMask;
 
 	uint32_t biasedExponent = (x & halfExponentMask) >> 10;
+
+	if (biasedExponent == 0 && mantissa != 0)
+	{
+		temp = halfNormalMin * float(mantissa) * halfMantissaDiv;
+
+		* punning |= sign;
+
+		return temp;
+	}
+
+	mantissa <<= 13;
 
 	int32_t trueExponent = int32_t(biasedExponent) - 15;
 

@@ -18,6 +18,7 @@ int FloatToHalfRoundtripTest();
 
 int main()
 {
+	/*
 	printf("halfNormalMin = %.15f | ", halfNormalMin);
 	PrintBinary(halfNormalMin);
 	printf("\n");
@@ -42,9 +43,10 @@ int main()
 	printf("output = %.15f | ", z);
 	PrintBinary(z);
 	printf("\n");
-	
+	*/
 
-	//FloatToHalfRoundtripTest();
+
+	FloatToHalfRoundtripTest();
 
 	return 0;
 }
@@ -75,7 +77,10 @@ int FloatToHalfRoundtripTest()
 		{
 			if (errorCount < 100)
 			{
+				float absErr = fabsf(value - z);
+
 				printf("ERROR: input = %.15f, output = %.15f \n", value, z);
+				printf("absolute error = %.15f\n", absErr);
 				printf("Input : ");
 				PrintBinary(value);
 				printf("\n");
@@ -84,10 +89,15 @@ int FloatToHalfRoundtripTest()
 				printf("\n");
 				printf("output : ");
 				PrintBinary(z);
-				printf("\n");
+				printf("\n");				
 			}
 
 			errorCount++;
+
+			if (errorCount == 100)
+			{
+				printf("Too many errors. Printing supressed\n");
+			}
 		}
 	}
 
