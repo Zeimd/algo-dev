@@ -8,7 +8,7 @@ project(floating_point)
 set(CMAKE_CXX_STANDARD 11)
 
 # Add source to this project's executable.
-add_executable (floating_point "main.cpp" "convert.cpp" "convert.h")
+add_executable (floating_point "main.cpp" "convert.cpp" "convert.h" "float16.h" "binary_print.cpp" "binary_print.h")
 
 message("${CMAKE_CURRENT_SOURCE_DIR}")
 
