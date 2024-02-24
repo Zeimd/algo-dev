@@ -18,9 +18,17 @@ int FloatToHalfRoundtripTest();
 
 int main()
 {
-	/*
-	float x = -1.5f;
+	printf("halfNormalMin = %.15f | ", halfNormalMin);
+	PrintBinary(halfNormalMin);
+	printf("\n");
 
+	printf("halfSubnormalMin = %.15f | ", halfSubnormalMin);
+	PrintBinary(halfSubnormalMin);
+	printf("\n");
+	
+	float x = 0.000000059605320f;
+
+	printf("input = %.15f | ", x);
 	PrintBinary(x);
 	printf("\n");
 
@@ -31,11 +39,12 @@ int main()
 
 	float z = y;
 
+	printf("output = %.15f | ", z);
 	PrintBinary(z);
 	printf("\n");
-	*/
+	
 
-	FloatToHalfRoundtripTest();
+	//FloatToHalfRoundtripTest();
 
 	return 0;
 }
@@ -54,7 +63,7 @@ int FloatToHalfRoundtripTest()
 	{
 		*punning = k;
 
-		if (value < halfMin || value > halfMax)
+		if (value < halfSubnormalMin || value > halfMax)
 		{
 			continue;
 		}

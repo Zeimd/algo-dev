@@ -39,9 +39,14 @@ uint16_t SingleToHalf(float x)
 		x = halfMax;
 	}
 
-	if (x < halfMin)
+	if (x < halfNormalMin)
 	{
-		x = halfMin;
+		if (x < halfSubnormalMin)
+		{
+			return 0;
+		}
+
+		return 0;
 	}
 
 	//printf("extracted mantissa: ");

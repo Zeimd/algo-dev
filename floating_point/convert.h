@@ -18,7 +18,8 @@ const uint32_t singleExponentMask = uint32_t(255) << 23;
 const uint32_t singleSignMask = uint32_t(1) << 31;
 
 static const float halfMax = 65504.0f;
-static const float halfMin = 1.0f / (float(1 << 24));
+static const float halfNormalMin = 1.0f / (float(1 << 14));
+static const float halfSubnormalMin = 1.0f / (float(1 << 24));
 
 uint16_t SingleToHalf(float x);
 
