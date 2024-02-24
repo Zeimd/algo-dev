@@ -71,5 +71,41 @@ uint16_t SingleToHalf(float x)
 
 float HalfToSingle(uint16_t x)
 {
-	return 0.0f;
+	if (x == halfQuietNan)
+	{
+		return std::numeric_limits<float>::quiet_NaN();
+	}
+
+	if (x == halfSignalingNan)
+	{
+		return std::numeric_limits<float>::signaling_NaN();
+	}
+
+	if (x == halfPlusInfinity)
+	{
+		return std::numeric_limits<float>::infinity();
+	}
+
+	if (x == halfMinusInfinity)
+	{
+		return -1.0f * std::numeric_limits<float>::infinity();
+	}
+
+	float temp;
+
+	uint32_t* punning = (uint32_t*)&temp;
+
+	uint32_t sign = (x & halfSignMask) << 16;
+
+	uint32_t mantissa = (x & halfMantissaMask) << 13;
+
+	uint32_t biasedExponent = (x & halfExponentMask) >> 10;
+
+	int32_t trueExponent = int32_t(biasedExponent) - 15;
+
+	biasedExponent = uint32_t(trueExponent + 127) << 23;
+
+	*punning = sign | mantissa | biasedExponent;
+
+	return temp;
 }

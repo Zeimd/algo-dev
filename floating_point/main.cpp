@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <limits>
+
 #include <ceng/lib/timerlib.h>
 
 #include <ceng/datatypes/aligned-buffer.h>
@@ -12,9 +14,11 @@
 
 #include "binary_print.h"
 
+int FloatToHalfRoundtripTest();
 
 int main()
 {
+	/*
 	float x = -1.5f;
 
 	PrintBinary(x);
@@ -29,6 +33,58 @@ int main()
 
 	PrintBinary(z);
 	printf("\n");
+	*/
+
+	FloatToHalfRoundtripTest();
 
 	return 0;
+}
+
+int FloatToHalfRoundtripTest()
+{
+	printf(__func__);
+
+	float value;
+
+	uint32_t* punning = (uint32_t*)&value;
+
+	uint32_t errorCount = 0;
+
+	for (uint32_t k = 0; k < std::numeric_limits<uint32_t>::max(); k++)
+	{
+		*punning = k;
+
+		if (value < halfMin || value > halfMax)
+		{
+			continue;
+		}
+
+		Float16 y(value);
+		float z = y;
+
+		if (z != value)
+		{
+			if (errorCount < 100)
+			{
+				printf("ERROR: input = %.15f, output = %.15f \n", value, z);
+				printf("Input : ");
+				PrintBinary(value);
+				printf("\n");
+				printf("Float 16 : ");
+				PrintBinary(y);
+				printf("\n");
+				printf("output : ");
+				PrintBinary(z);
+				printf("\n");
+			}
+
+			errorCount++;
+		}
+	}
+
+	double errorPercent = double(errorCount) / double(std::numeric_limits<uint32_t>::max()) * 100.0;
+
+	printf("Total errors = %u / %u (%f %%)\n", errorCount, std::numeric_limits<uint32_t>::max(), errorPercent);
+
+	return errorCount;
 }
