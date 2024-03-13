@@ -78,7 +78,7 @@ double PrecisionArcMin(double x)
 
 double PrecisionHalf(double x)
 {
-	return round(x * 4.0) / 4.0;
+	return round(x * 2.0) / 2.0;
 }
 
 double LatitudeNewtonMethod(double dec, double altitude, double zn, double assumedLat, double tolerance, int& out_iters)
