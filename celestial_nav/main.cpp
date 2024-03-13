@@ -5,7 +5,17 @@ constexpr double pi = 3.14159265358979323846;
 constexpr double deg2rad =  pi / 180.0;
 constexpr double rad2deg = 180.0 / pi;
 
-double LatitudeNewtonMethod(double dec, double altitude, double zn, double assumedLat, int& out_iters);
+constexpr double minuteOfArc = 1.0 / 60.0;
+constexpr double minuteOfArcInverse = 1.0 / minuteOfArc;
+
+constexpr double tenthOfminuteOfArc = minuteOfArc * 0.1;
+constexpr double tenthOfminuteOfArcInverse = 1.0 / tenthOfminuteOfArc;
+
+
+double LatitudeNewtonMethod(double dec, double altitude, double zn, double assumedLat, double tolerance, int& out_iters);
+
+double PrecisionArcMin(double x);
+double PrecisionHalf(double x);
 
 void PrintDegMins(double degrees)
 {
@@ -21,17 +31,37 @@ void PrintDegMins(double degrees)
 
 int main()
 {
-	double dec = 55.83;
-	
-	double altitude = 56.19;
+	printf("minute of arc = %lf\n", minuteOfArc);
 
-	double zn = 71.58;
+	double dec, altitude, zn;
+
+	// alioth
+
+
+	//dec = 55.83;	
+	//altitude = 56.19;
+	//zn = 71.58;
+
+	// capella
+	dec = 46.02;
+	zn = 253.02;
+	//zn = 252.5;
+	altitude = 59.64;
+
+	printf("input: dec = %lf, zn = %lf, altitude = %lf\n", dec, zn, altitude);
+
+	dec = PrecisionArcMin(dec);
+	altitude = PrecisionArcMin(altitude);
+	
+	zn = PrecisionHalf(zn);
+
+	printf("rounded: dec = %lf, zn = %lf, altitude = %lf\n", dec, zn, altitude);
 
 	double assumedLat = 0;
 
 	int iters = 0;
 
-	double lat = LatitudeNewtonMethod(dec, altitude, zn, assumedLat, iters);
+	double lat = LatitudeNewtonMethod(dec, altitude, zn, assumedLat, tenthOfminuteOfArc, iters);
 
 	printf("lat = ");
 	PrintDegMins(lat);
@@ -41,7 +71,17 @@ int main()
 	return 0;
 }
 
-double LatitudeNewtonMethod(double dec, double altitude, double zn, double assumedLat, int& out_iters)
+double PrecisionArcMin(double x)
+{
+	return round(tenthOfminuteOfArcInverse * x) * tenthOfminuteOfArc;
+}
+
+double PrecisionHalf(double x)
+{
+	return round(x * 4.0) / 4.0;
+}
+
+double LatitudeNewtonMethod(double dec, double altitude, double zn, double assumedLat, double tolerance, int& out_iters)
 {
 	double a = sin(dec * deg2rad);
 	double b = sin(altitude * deg2rad);
@@ -61,8 +101,6 @@ double LatitudeNewtonMethod(double dec, double altitude, double zn, double assum
 	//printf("c = %.15lf\n", c);
 
 	int iters = 0;
-
-	const double tolerance = 1.0e-6;
 
 	double lat = assumedLat;
 
