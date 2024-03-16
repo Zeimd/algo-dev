@@ -11,7 +11,9 @@ public:
 	{
 		T value;
 
-		value_type<Tr...> item;
+		using next_type = value_type<Tr...>;
+
+		next_type item;
 	};
 
 	template<typename T>
@@ -20,7 +22,9 @@ public:
 		T value;
 	};
 
-	value_type<Ts...> item;
+	using first_item_type = value_type<Ts...>;
+
+	first_item_type item;
 
 	// Used for first item in tuple when N != 0
 	template <unsigned int N, unsigned int C, bool MATCH, typename CURRENT, typename...REMAINING>
