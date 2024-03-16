@@ -11,6 +11,8 @@ public:
 	{
 		T value;
 
+		using container_type = value_type;
+
 		using next_type = value_type<Tr...>;
 
 		next_type item;
@@ -19,6 +21,8 @@ public:
 	template<typename T>
 	struct value_type<T>
 	{
+		using container_type = value_type;
+
 		T value;
 	};
 
