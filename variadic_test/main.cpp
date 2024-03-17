@@ -4,11 +4,11 @@
 
 int main()
 {
-	TestTuple<int, double, float> a;
-	//TestTuple<int, double, float> a{ 14,7.0,3.141f };
+	//TestTuple<int, double, float> a;
+	TestTuple<int, double, float> a{ 14,7.0,3.141f };
 
 	printf("tuple length = %i\n", a.length);
-	printf("tuple length, struct template = %i\n", a.length_from_struct_template);
+	//printf("tuple length, struct template = %i\n", a.length_from_struct_template);
 
 	/*
 	a.item.value = 14;

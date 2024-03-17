@@ -4,7 +4,7 @@
 template<typename...Ts>
 class TestTuple
 {
-public:
+protected:
 	
 	template<typename CURRENT, typename...REMAINING>
 	struct value_type
@@ -74,8 +74,6 @@ public:
 
 	static const unsigned int length_from_struct_template = get_tuple_length<1,Ts...>::length;
 
-	static const unsigned int length = sizeof...(Ts);
-
 	// Used when N != C
 	template<unsigned int N, unsigned int C, bool MATCH, typename CURRENT, typename ... REMAINING>
 	struct Getter
@@ -105,13 +103,6 @@ public:
 			return item.value;
 		}
 	};
-
-	template<unsigned int N>
-	const auto Get() 
-	{
-		return Getter<N,1,N==0,Ts...>::Get(item);
-	}
-
 	
 	// Used when N != C
 	template<typename SOURCE_TYPE, unsigned int N, unsigned int C, bool MATCH, typename CURRENT, typename ... REMAINING>
@@ -143,11 +134,6 @@ public:
 		}
 	};
 
-	template<unsigned int N, typename SOURCE_TYPE>
-	void Set(const SOURCE_TYPE& source)
-	{
-		Setter<SOURCE_TYPE,N, 1, N == 0, Ts...>::Set(item,source);
-	}
 
 	// Used for intermediate items in tuple
 	template<typename CURRENT, typename...REMAINING>
@@ -182,6 +168,22 @@ public:
 			item.value = CURRENT();
 		}
 	};
+
+public:
+
+	static const unsigned int length = sizeof...(Ts);
+
+	template<unsigned int N>
+	const auto Get()
+	{
+		return Getter<N, 1, N == 0, Ts...>::Get(item);
+	}
+
+	template<unsigned int N, typename SOURCE_TYPE>
+	void Set(const SOURCE_TYPE& source)
+	{
+		Setter<SOURCE_TYPE, N, 1, N == 0, Ts...>::Set(item, source);
+	}
 
 	TestTuple(Ts...args)
 	{
