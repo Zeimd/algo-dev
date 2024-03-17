@@ -112,6 +112,45 @@ public:
 		return Getter<N,1,N==0,Ts...>::Get(item);
 	}
 
+	
+	// Used when N != C
+	template<typename SOURCE_TYPE, unsigned int N, unsigned int C, bool MATCH, typename CURRENT, typename ... REMAINING>
+	struct Setter
+	{
+		static void Set(value_type<CURRENT, REMAINING...>& item, const SOURCE_TYPE& source)
+		{
+			Setter<SOURCE_TYPE, N, C + 1, N == C, REMAINING...>::Set(item.item, source);
+		}
+	};
+
+	// Used for intermediate item in tuple when N==C
+	template<typename SOURCE_TYPE, unsigned int N, unsigned int C, typename CURRENT, typename ...REMAINING>
+	struct Setter<SOURCE_TYPE, N, C, true, CURRENT, REMAINING...>
+	{
+		static void Set(value_type<CURRENT, REMAINING...>& item, const SOURCE_TYPE& source)
+		{
+			item.value = source;
+		}
+	};
+
+	// Used for last item in tuple when N==C
+	template<typename SOURCE_TYPE, unsigned int N, unsigned int C, typename CURRENT>
+	struct Setter<SOURCE_TYPE, N, C, true, CURRENT>
+	{
+		static void Set(value_type<CURRENT>& item, const SOURCE_TYPE& source)
+		{
+			item.value = source;
+		}
+	};
+
+	template<unsigned int N, typename SOURCE_TYPE>
+	void Set(const SOURCE_TYPE& source)
+	{
+		Setter<SOURCE_TYPE,N, 1, N == 0, Ts...>::Set(item,source);
+	}
+
+	
+	
 };
 
 
