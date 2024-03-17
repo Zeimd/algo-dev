@@ -32,29 +32,29 @@ protected:
 
 	// Used when N != C
 	template <unsigned int N, unsigned int C, bool MATCH, typename CURRENT, typename...REMAINING>
-	struct get_return_type
+	struct get_item_type_impl
 	{
-		using return_type = typename get_return_type<N, C + 1, N == C, REMAINING...>::return_type;
+		using item_type = typename get_item_type_impl<N, C + 1, N == C, REMAINING...>::item_type;
 	};
 
 	// Used when N==C
 	template <unsigned int N, unsigned int C, typename PREV, typename...REMAINING>
-	struct get_return_type<N, C, true, PREV, REMAINING...>
+	struct get_item_type_impl<N, C, true, PREV, REMAINING...>
 	{
-		using return_type = typename PREV;
+		using item_type = typename PREV;
 	};
 	
 	// Used for last item in tuple when N==C
 	template <unsigned int N, unsigned int C, typename CURRENT>
-	struct get_return_type<N, C, true, CURRENT>
+	struct get_item_type_impl<N, C, true, CURRENT>
 	{
-		using return_type = typename CURRENT;
+		using item_type = typename CURRENT;
 	};
 
 	template<unsigned int N>
-	struct get_return_type_start
+	struct get_item_type
 	{
-		using return_type = typename get_return_type<N, 1, N == 0, Ts...>::return_type;
+		using item_type = typename get_item_type_impl<N, 1, N == 0, Ts...>::item_;
 	};
 
 
