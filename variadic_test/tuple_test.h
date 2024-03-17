@@ -149,7 +149,49 @@ public:
 		Setter<SOURCE_TYPE,N, 1, N == 0, Ts...>::Set(item,source);
 	}
 
-	
+	// Used for intermediate items in tuple
+	template<typename CURRENT, typename...REMAINING>
+	struct Constructor
+	{
+		static void Construct(value_type<CURRENT,REMAINING...>& item, CURRENT source, REMAINING...args)
+		{
+			item.value = source;
+
+			Constructor<REMAINING...>::Construct(item.item, args...);
+		}
+
+		static void DefaultConstruct(value_type<CURRENT, REMAINING...>& item)
+		{
+			item.value = CURRENT();
+
+			Constructor<REMAINING...>::DefaultConstruct(item.item);
+		}
+	};
+
+	// Used for last item in tuple
+	template<typename CURRENT>
+	struct Constructor<CURRENT>
+	{
+		static void Construct(value_type<CURRENT>& item, CURRENT source)
+		{
+			item.value = source;
+		}
+
+		static void DefaultConstruct(value_type<CURRENT>& item)
+		{
+			item.value = CURRENT();
+		}
+	};
+
+	TestTuple(Ts...args)
+	{
+		Constructor<Ts...>::Construct(item, args...);
+	}
+
+	TestTuple()
+	{
+		Constructor<Ts...>::DefaultConstruct(item);
+	}
 	
 };
 
