@@ -6,24 +6,24 @@ class TestTuple
 {
 public:
 	
-	template<typename T, typename...Tr>
+	template<typename CURRENT, typename...REMAINING>
 	struct value_type
 	{
-		T value;
+		CURRENT value;
 
 		using container_type = value_type;
 
-		using next_type = value_type<Tr...>;
+		using next_type = value_type<REMAINING...>;
 
 		next_type item;
 	};
 
-	template<typename T>
-	struct value_type<T>
+	template<typename CURRENT>
+	struct value_type<CURRENT>
 	{
 		using container_type = value_type;
 
-		T value;
+		CURRENT value;
 	};
 
 	using first_item_type = value_type<Ts...>;
