@@ -13,6 +13,8 @@ int main()
 	a.item.item.value = 7.0;
 	a.item.item.item.value = 3.141f;
 
+	a.Set<2>(6.22f);
+
 	printf("a.int = %i\n", a.item.value);
 	
 	printf("a.int = %i\n", a.Get<0>());

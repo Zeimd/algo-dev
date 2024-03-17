@@ -80,7 +80,7 @@ public:
 	template<unsigned int N, unsigned int C, bool MATCH, typename CURRENT, typename ... REMAINING>
 	struct Getter
 	{
-		static auto Get(value_type<CURRENT, REMAINING...> item)
+		static const auto Get(const value_type<CURRENT, REMAINING...>& item)
 		{
 			return Getter<N, C + 1, N == C, REMAINING...>::Get(item.item);
 		}
@@ -90,7 +90,7 @@ public:
 	template<unsigned int N, unsigned int C, typename CURRENT, typename ...REMAINING>
 	struct Getter<N, C, true, CURRENT, REMAINING...>
 	{
-		static auto Get(value_type<CURRENT, REMAINING...> item)
+		static const auto Get(const value_type<CURRENT, REMAINING...>& item)
 		{
 			return item.value;
 		}
@@ -100,14 +100,14 @@ public:
 	template<unsigned int N, unsigned int C, typename CURRENT>
 	struct Getter<N, C, true, CURRENT>
 	{
-		static auto Get(value_type<CURRENT> item)
+		static const auto Get(const value_type<CURRENT>& item)
 		{
 			return item.value;
 		}
 	};
 
 	template<unsigned int N>
-	auto Get() 
+	const auto Get() 
 	{
 		return Getter<N,1,N==0,Ts...>::Get(item);
 	}
