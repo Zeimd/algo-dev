@@ -30,14 +30,14 @@ public:
 
 	first_item_type item;
 
-	// Used for first item in tuple when N != 0
+	// Used when N != C
 	template <unsigned int N, unsigned int C, bool MATCH, typename CURRENT, typename...REMAINING>
 	struct get_return_type
 	{
 		using return_type = typename get_return_type<N, C + 1, N == C, REMAINING...>::return_type;
 	};
 
-	// Used for first item in tuple when N==C
+	// Used when N==C
 	template <unsigned int N, unsigned int C, typename PREV, typename...REMAINING>
 	struct get_return_type<N, C, true, PREV, REMAINING...>
 	{
@@ -57,11 +57,61 @@ public:
 		using return_type = typename get_return_type<N, 1, N == 0, Ts...>::return_type;
 	};
 
-	template<unsigned int N>
-	auto Get() -> typename get_return_type_start<N>::return_type
+
+	// Used when N 
+	template <unsigned int C, typename CURRENT, typename...REMAINING>
+	struct get_tuple_length
 	{
-		return N;
+		static const constexpr unsigned int length = get_tuple_length<C + 1,REMAINING...>::length;
+	};
+
+	// Used for last item in tuple when N==C
+	template <unsigned int C, typename CURRENT>
+	struct get_tuple_length<C, CURRENT>
+	{
+		static const unsigned int length = C;
+	};
+
+	static const unsigned int length_from_struct_template = get_tuple_length<1,Ts...>::length;
+
+	static const unsigned int length = sizeof...(Ts);
+
+	// Used when N != C
+	template<unsigned int N, unsigned int C, bool MATCH, typename CURRENT, typename ... REMAINING>
+	struct Getter
+	{
+		static auto Get(value_type<CURRENT, REMAINING...> item)
+		{
+			return Getter<N, C + 1, N == C, REMAINING...>::Get(item.item);
+		}
+	};
+
+	// Used for intermediate item in tuple when N==C
+	template<unsigned int N, unsigned int C, typename CURRENT, typename ...REMAINING>
+	struct Getter<N, C, true, CURRENT, REMAINING...>
+	{
+		static auto Get(value_type<CURRENT, REMAINING...> item)
+		{
+			return item.value;
+		}
+	};
+
+	// Used for last item in tuple when N==C
+	template<unsigned int N, unsigned int C, typename CURRENT>
+	struct Getter<N, C, true, CURRENT>
+	{
+		static auto Get(value_type<CURRENT> item)
+		{
+			return item.value;
+		}
+	};
+
+	template<unsigned int N>
+	auto Get() 
+	{
+		return Getter<N,1,N==0,Ts...>::Get(item);
 	}
+
 };
 
 
