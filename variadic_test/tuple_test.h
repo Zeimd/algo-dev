@@ -15,7 +15,7 @@ private:
 
 		using next_type = value_type<REMAINING...>;
 
-		next_type item;
+		next_type next;
 	};
 
 	template<typename CURRENT>
@@ -28,7 +28,7 @@ private:
 
 	using first_item_type = value_type<Ts...>;
 
-	first_item_type item;
+	first_item_type first;
 
 	// Used when N != C
 	template <unsigned int N, unsigned int C, bool MATCH, typename CURRENT, typename...REMAINING>
@@ -80,7 +80,7 @@ private:
 	{
 		static const auto Get(const value_type<CURRENT, REMAINING...>& item)
 		{
-			return Getter<N, C + 1, N == C, REMAINING...>::Get(item.item);
+			return Getter<N, C + 1, N == C, REMAINING...>::Get(item.next);
 		}
 	};
 
@@ -110,7 +110,7 @@ private:
 	{
 		static void Set(value_type<CURRENT, REMAINING...>& item, const SOURCE_TYPE& source)
 		{
-			Setter<SOURCE_TYPE, N, C + 1, N == C, REMAINING...>::Set(item.item, source);
+			Setter<SOURCE_TYPE, N, C + 1, N == C, REMAINING...>::Set(item.next, source);
 		}
 	};
 
@@ -143,14 +143,14 @@ private:
 		{
 			item.value = source;
 
-			Constructor<REMAINING...>::Construct(item.item, args...);
+			Constructor<REMAINING...>::Construct(item.next, args...);
 		}
 
 		static void DefaultConstruct(value_type<CURRENT, REMAINING...>& item)
 		{
 			item.value = CURRENT();
 
-			Constructor<REMAINING...>::DefaultConstruct(item.item);
+			Constructor<REMAINING...>::DefaultConstruct(item.next);
 		}
 	};
 
@@ -176,23 +176,23 @@ public:
 	template<unsigned int N>
 	const auto Get()
 	{
-		return Getter<N, 1, N == 0, Ts...>::Get(item);
+		return Getter<N, 1, N == 0, Ts...>::Get(first);
 	}
 
 	template<unsigned int N, typename SOURCE_TYPE>
 	void Set(const SOURCE_TYPE& source)
 	{
-		Setter<SOURCE_TYPE, N, 1, N == 0, Ts...>::Set(item, source);
+		Setter<SOURCE_TYPE, N, 1, N == 0, Ts...>::Set(first, source);
 	}
 
 	TestTuple(Ts...args)
 	{
-		Constructor<Ts...>::Construct(item, args...);
+		Constructor<Ts...>::Construct(first, args...);
 	}
 
 	TestTuple()
 	{
-		Constructor<Ts...>::DefaultConstruct(item);
+		Constructor<Ts...>::DefaultConstruct(first);
 	}
 	
 };
