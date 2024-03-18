@@ -4,7 +4,7 @@
 template<typename...Ts>
 class TestTuple
 {
-protected:
+private:
 	
 	template<typename CURRENT, typename...REMAINING>
 	struct value_type
