@@ -1,6 +1,8 @@
 
 #include <limits>
 
+#include <cmath>
+
 #include "convert.h"
 
 #include "binary_print.h"
